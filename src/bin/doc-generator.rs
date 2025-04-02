@@ -121,8 +121,8 @@ fn generate_examples_markdown(
 
     // If promote flag is set, also copy the index file to the examples directory
     if promote {
-        let promoted_index_path = examples_dir.join("index.md");
-        fs::copy(output_dir.join("index.md"), promoted_index_path)?;
+        let promoted_index_path = examples_dir.join("README.md");
+        fs::copy(output_dir.join("README.md"), promoted_index_path)?;
     }
     Ok(())
 }
