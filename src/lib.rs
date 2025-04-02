@@ -16,6 +16,10 @@ pub mod exporters;
 pub mod types;
 pub mod plugin;
 
+// Re-export common transforms for convenience
+pub use transforms::basic::{Scale, Translate, Rotate};
+pub use transforms::advanced::{Matrix, Mirror, Quaternion};
+
 /// Error types for the model-generator library.
 #[derive(Error, Debug)]
 pub enum Error {

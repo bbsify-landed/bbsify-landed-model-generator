@@ -1,6 +1,5 @@
-use model_generator::{Model};
+use model_generator::{Model, Scale, Rotate, Translate};
 use model_generator::primitives::{Cube, Sphere, Cylinder};
-use model_generator::transforms::{Scale, Rotate, Translate};
 use std::path::PathBuf;
 use std::process;
 use std::str::FromStr;
