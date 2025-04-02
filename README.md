@@ -1,5 +1,10 @@
 # 3D Model Generator
 
+[![Rust CI](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/rust.yml/badge.svg)](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/rust.yml)
+[![Documentation](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/docs.yml/badge.svg)](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/docs.yml)
+[![Benchmarks](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/benchmark.yml/badge.svg)](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/benchmark.yml)
+[![Examples](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/examples.yml/badge.svg)](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/examples.yml)
+
 A powerful Rust library for programmatically generating 3D models through composable transformations and plugins.
 
 ## Features
@@ -151,11 +156,10 @@ This project uses GitHub Actions for continuous integration and deployment:
    - Generates Rust documentation
    - Publishes documentation to GitHub Pages
 
-### Status Badges
-
-[![Rust CI](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/rust.yml/badge.svg)](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/rust.yml)
-[![Documentation](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/docs.yml/badge.svg)](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/docs.yml)
-[![Benchmarks](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/benchmark.yml/badge.svg)](https://github.com/bbsify-landed/bbsify-landed-model-generator/actions/workflows/benchmark.yml)
+4. **Examples** (`examples.yml`)
+   - Runs on pushes to main
+   - Builds and tests example code
+   - Ensures examples are always working
 
 ## License
 
