@@ -35,9 +35,9 @@ impl Plugin for SnowmanPlugin {
         let mut snowman = Model::new("snowman");
 
         // Create snowman components
-        let mut bottom = Sphere::new().radius(1.0).build();
-        let mut middle = Sphere::new().radius(0.7).center(0.0, 2.4, 0.0).build();
-        let mut nose = Cylinder::new().radius(0.1).height(0.5).segments(16).build();
+        let bottom = Sphere::new().radius(1.0).build();
+        let middle = Sphere::new().radius(0.7).center(0.0, 2.4, 0.0).build();
+        let nose = Cylinder::new().radius(0.1).height(0.5).segments(16).build();
         let mut left_arm = Cylinder::new().radius(0.05).height(0.8).segments(8).build();
         let mut right_arm = Cylinder::new().radius(0.05).height(0.8).segments(8).build();
         let mut hat_top = Cylinder::new().radius(0.4).height(0.4).segments(32).build();
