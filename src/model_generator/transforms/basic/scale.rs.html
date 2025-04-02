@@ -54,8 +54,12 @@
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
-<a href="#56" id="56">56</a></pre></div><pre class="rust"><code><span class="kw">use </span>nalgebra::Vector3;
-<span class="kw">use crate</span>::{Model, Transform, <span class="prelude-ty">Result</span>, Error};
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a></pre></div><pre class="rust"><code><span class="kw">use crate</span>::{Error, Model, <span class="prelude-ty">Result</span>, Transform};
+<span class="kw">use </span>nalgebra::Vector3;
 
 <span class="doccomment">/// Scales a model uniformly or non-uniformly.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
@@ -70,10 +74,14 @@
     </span><span class="kw">pub fn </span>new(x: f32, y: f32, z: f32) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ x, y, z }
     }
-    
+
     <span class="doccomment">/// Create a uniform scaling transformation.
     </span><span class="kw">pub fn </span>uniform(scale: f32) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ x: scale, y: scale, z: scale }
+        <span class="self">Self </span>{
+            x: scale,
+            y: scale,
+            z: scale,
+        }
     }
 }
 
@@ -83,7 +91,7 @@
             vertex.position.x <span class="kw-2">*</span>= <span class="self">self</span>.x;
             vertex.position.y <span class="kw-2">*</span>= <span class="self">self</span>.y;
             vertex.position.z <span class="kw-2">*</span>= <span class="self">self</span>.z;
-            
+
             <span class="comment">// Handle normal scaling (inverse transpose for non-uniform scaling)
             </span><span class="kw">if </span><span class="self">self</span>.x == <span class="self">self</span>.y &amp;&amp; <span class="self">self</span>.y == <span class="self">self</span>.z {
                 <span class="comment">// Uniform scaling doesn't change the normal direction
@@ -106,7 +114,8 @@
                 }
             }
         }
-        
+
         <span class="prelude-val">Ok</span>(())
     }
-} </code></pre></div></section></main></body></html>
+}
+</code></pre></div></section></main></body></html>

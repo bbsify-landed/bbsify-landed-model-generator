@@ -192,8 +192,20 @@
 <a href="#191" id="191">191</a>
 <a href="#192" id="192">192</a>
 <a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a></pre></div><pre class="rust"><code><span class="kw">use </span>nalgebra::Vector3;
-<span class="kw">use crate</span>::{Model, Transform, <span class="prelude-ty">Result</span>};
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a></pre></div><pre class="rust"><code><span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>, Transform};
+<span class="kw">use </span>nalgebra::Vector3;
 
 <span class="doccomment">/// Applies a tapering deformation along an axis.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
@@ -206,11 +218,11 @@
 
 <span class="kw">impl </span>Taper {
     <span class="doccomment">/// Create a new tapering transformation.
-    /// 
+    ///
     /// Vertices will be scaled perpendicular to the main axis, with the
     /// scale factor varying linearly from start_scale to end_scale
     /// as the vertex position moves from bounds.0 to bounds.1 along the axis.
-    /// 
+    ///
     /// # Arguments
     /// * `axis` - The axis along which to taper
     /// * `start_scale` - The scale factor at the start bound (x, y, z)
@@ -229,13 +241,9 @@
             bounds,
         }
     }
-    
+
     <span class="doccomment">/// Create a taper along the X axis.
-    </span><span class="kw">pub fn </span>x_axis(
-        start_scale: (f32, f32), 
-        end_scale: (f32, f32), 
-        x_range: (f32, f32)
-    ) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>x_axis(start_scale: (f32, f32), end_scale: (f32, f32), x_range: (f32, f32)) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(
             Vector3::new(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
             Vector3::new(<span class="number">1.0</span>, start_scale.<span class="number">0</span>, start_scale.<span class="number">1</span>),
@@ -243,13 +251,9 @@
             x_range,
         )
     }
-    
+
     <span class="doccomment">/// Create a taper along the Y axis.
-    </span><span class="kw">pub fn </span>y_axis(
-        start_scale: (f32, f32), 
-        end_scale: (f32, f32), 
-        y_range: (f32, f32)
-    ) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>y_axis(start_scale: (f32, f32), end_scale: (f32, f32), y_range: (f32, f32)) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(
             Vector3::new(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>),
             Vector3::new(start_scale.<span class="number">0</span>, <span class="number">1.0</span>, start_scale.<span class="number">1</span>),
@@ -257,13 +261,9 @@
             y_range,
         )
     }
-    
+
     <span class="doccomment">/// Create a taper along the Z axis.
-    </span><span class="kw">pub fn </span>z_axis(
-        start_scale: (f32, f32), 
-        end_scale: (f32, f32), 
-        z_range: (f32, f32)
-    ) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>z_axis(start_scale: (f32, f32), end_scale: (f32, f32), z_range: (f32, f32)) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(
             Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
             Vector3::new(start_scale.<span class="number">0</span>, start_scale.<span class="number">1</span>, <span class="number">1.0</span>),
@@ -277,58 +277,58 @@
     <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, model: <span class="kw-2">&amp;mut </span>Model) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// Calculate range length for the tapering region
         </span><span class="kw">let </span>range_length = <span class="self">self</span>.bounds.<span class="number">1 </span>- <span class="self">self</span>.bounds.<span class="number">0</span>;
-        
+
         <span class="comment">// Ensure we don't divide by zero
         </span><span class="kw">if </span>range_length.abs() &lt; <span class="number">1e-5 </span>{
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
-        
+
         <span class="comment">// Get two perpendicular axes
         </span><span class="kw">let </span>p1 = <span class="kw">if </span><span class="self">self</span>.axis.x.abs() &lt; <span class="number">0.9 </span>{
             Vector3::new(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)
         } <span class="kw">else </span>{
             Vector3::new(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>)
         };
-        
+
         <span class="kw">let </span>perp1 = p1 - (p1.dot(<span class="kw-2">&amp;</span><span class="self">self</span>.axis) * <span class="self">self</span>.axis);
         <span class="kw">let </span>perp1 = perp1.normalize();
         <span class="kw">let </span>perp2 = <span class="self">self</span>.axis.cross(<span class="kw-2">&amp;</span>perp1).normalize();
-        
+
         <span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;mut </span>model.mesh.vertices {
             <span class="kw">let </span>position = <span class="kw-2">&amp;mut </span>vertex.position;
             <span class="kw">let </span>pos_vec = Vector3::new(position.x, position.y, position.z);
-            
+
             <span class="comment">// Calculate position along taper axis
             </span><span class="kw">let </span>pos_along_axis = pos_vec.dot(<span class="kw-2">&amp;</span><span class="self">self</span>.axis);
-            
+
             <span class="comment">// Skip vertices outside the taper range
             </span><span class="kw">if </span>pos_along_axis &lt; <span class="self">self</span>.bounds.<span class="number">0 </span>|| pos_along_axis &gt; <span class="self">self</span>.bounds.<span class="number">1 </span>{
                 <span class="kw">continue</span>;
             }
-            
+
             <span class="comment">// Calculate interpolation factor (0.0 at start, 1.0 at end)
             </span><span class="kw">let </span>t = (pos_along_axis - <span class="self">self</span>.bounds.<span class="number">0</span>) / range_length;
-            
+
             <span class="comment">// Interpolate scale factors
             </span><span class="kw">let </span>scale_x = <span class="self">self</span>.start_scale.x * (<span class="number">1.0 </span>- t) + <span class="self">self</span>.end_scale.x * t;
             <span class="kw">let </span>scale_y = <span class="self">self</span>.start_scale.y * (<span class="number">1.0 </span>- t) + <span class="self">self</span>.end_scale.y * t;
             <span class="kw">let </span>scale_z = <span class="self">self</span>.start_scale.z * (<span class="number">1.0 </span>- t) + <span class="self">self</span>.end_scale.z * t;
-            
+
             <span class="comment">// Find a point on the axis
             </span><span class="kw">let </span>axis_point = <span class="self">self</span>.axis * pos_along_axis;
-            
+
             <span class="comment">// Vector from axis to the point
             </span><span class="kw">let </span>from_axis = pos_vec - axis_point;
-            
+
             <span class="comment">// Decompose into components along our perpendicular axes
             </span><span class="kw">let </span>comp1 = from_axis.dot(<span class="kw-2">&amp;</span>perp1) * perp1;
             <span class="kw">let </span>comp2 = from_axis.dot(<span class="kw-2">&amp;</span>perp2) * perp2;
-            
+
             <span class="comment">// Apply scale to the components appropriately based on axis orientation
             </span><span class="kw">let </span>scaled_comp1: Vector3&lt;f32&gt;;
             <span class="kw">let </span>scaled_comp2: Vector3&lt;f32&gt;;
-            
-            <span class="kw">if </span><span class="self">self</span>.axis.x.abs() &gt; <span class="number">0.9 </span>{ 
+
+            <span class="kw">if </span><span class="self">self</span>.axis.x.abs() &gt; <span class="number">0.9 </span>{
                 <span class="comment">// X is the main axis
                 </span>scaled_comp1 = comp1 * scale_y;
                 scaled_comp2 = comp2 * scale_z;
@@ -341,48 +341,73 @@
                 </span>scaled_comp1 = comp1 * scale_x;
                 scaled_comp2 = comp2 * scale_y;
             }
-            
+
             <span class="comment">// Calculate new position
             </span><span class="kw">let </span>new_pos = axis_point + scaled_comp1 + scaled_comp2;
             position.x = new_pos.x;
             position.y = new_pos.y;
             position.z = new_pos.z;
-            
+
             <span class="comment">// Handle normal transformation
             // For a taper, the normals get more complex - this is a first approximation
             // A proper solution would compute the Jacobian matrix of the deformation
             // For now, we'll use the inverse of the scale factors
             </span><span class="kw">let </span>normal = <span class="kw-2">&amp;mut </span>vertex.normal;
-            
+
             <span class="kw">let </span>normal_along_axis = normal.dot(<span class="kw-2">&amp;</span><span class="self">self</span>.axis) * <span class="self">self</span>.axis;
             <span class="kw">let </span>normal_perp1 = normal.dot(<span class="kw-2">&amp;</span>perp1) * perp1;
             <span class="kw">let </span>normal_perp2 = normal.dot(<span class="kw-2">&amp;</span>perp2) * perp2;
-            
+
             <span class="kw">let </span>scaled_normal_perp1: Vector3&lt;f32&gt;;
             <span class="kw">let </span>scaled_normal_perp2: Vector3&lt;f32&gt;;
-            
+
             <span class="kw">if </span><span class="self">self</span>.axis.x.abs() &gt; <span class="number">0.9 </span>{
                 <span class="comment">// X is the main axis
-                </span>scaled_normal_perp1 = <span class="kw">if </span>scale_y != <span class="number">0.0 </span>{ normal_perp1 / scale_y } <span class="kw">else </span>{ normal_perp1 };
-                scaled_normal_perp2 = <span class="kw">if </span>scale_z != <span class="number">0.0 </span>{ normal_perp2 / scale_z } <span class="kw">else </span>{ normal_perp2 };
+                </span>scaled_normal_perp1 = <span class="kw">if </span>scale_y != <span class="number">0.0 </span>{
+                    normal_perp1 / scale_y
+                } <span class="kw">else </span>{
+                    normal_perp1
+                };
+                scaled_normal_perp2 = <span class="kw">if </span>scale_z != <span class="number">0.0 </span>{
+                    normal_perp2 / scale_z
+                } <span class="kw">else </span>{
+                    normal_perp2
+                };
             } <span class="kw">else if </span><span class="self">self</span>.axis.y.abs() &gt; <span class="number">0.9 </span>{
                 <span class="comment">// Y is the main axis
-                </span>scaled_normal_perp1 = <span class="kw">if </span>scale_x != <span class="number">0.0 </span>{ normal_perp1 / scale_x } <span class="kw">else </span>{ normal_perp1 };
-                scaled_normal_perp2 = <span class="kw">if </span>scale_z != <span class="number">0.0 </span>{ normal_perp2 / scale_z } <span class="kw">else </span>{ normal_perp2 };
+                </span>scaled_normal_perp1 = <span class="kw">if </span>scale_x != <span class="number">0.0 </span>{
+                    normal_perp1 / scale_x
+                } <span class="kw">else </span>{
+                    normal_perp1
+                };
+                scaled_normal_perp2 = <span class="kw">if </span>scale_z != <span class="number">0.0 </span>{
+                    normal_perp2 / scale_z
+                } <span class="kw">else </span>{
+                    normal_perp2
+                };
             } <span class="kw">else </span>{
                 <span class="comment">// Z is the main axis
-                </span>scaled_normal_perp1 = <span class="kw">if </span>scale_x != <span class="number">0.0 </span>{ normal_perp1 / scale_x } <span class="kw">else </span>{ normal_perp1 };
-                scaled_normal_perp2 = <span class="kw">if </span>scale_y != <span class="number">0.0 </span>{ normal_perp2 / scale_y } <span class="kw">else </span>{ normal_perp2 };
+                </span>scaled_normal_perp1 = <span class="kw">if </span>scale_x != <span class="number">0.0 </span>{
+                    normal_perp1 / scale_x
+                } <span class="kw">else </span>{
+                    normal_perp1
+                };
+                scaled_normal_perp2 = <span class="kw">if </span>scale_y != <span class="number">0.0 </span>{
+                    normal_perp2 / scale_y
+                } <span class="kw">else </span>{
+                    normal_perp2
+                };
             }
-            
+
             <span class="kw-2">*</span>normal = normal_along_axis + scaled_normal_perp1 + scaled_normal_perp2;
-            
+
             <span class="comment">// Normalize to maintain unit length
             </span><span class="kw">if </span>normal.magnitude() &gt; <span class="number">0.0 </span>{
                 <span class="kw-2">*</span>normal = normal.normalize();
             }
         }
-        
+
         <span class="prelude-val">Ok</span>(())
     }
-} </code></pre></div></section></main></body></html>
+}
+</code></pre></div></section></main></body></html>

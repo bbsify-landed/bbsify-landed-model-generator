@@ -67,7 +67,7 @@
 <a href="#66" id="66">66</a>
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a></pre></div><pre class="rust"><code><span class="kw">use crate</span>::{Model, Transform, <span class="prelude-ty">Result</span>};
+<a href="#69" id="69">69</a></pre></div><pre class="rust"><code><span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>, Transform};
 
 <span class="doccomment">/// Applies a mirror reflection to a model.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
@@ -82,17 +82,17 @@
     </span><span class="kw">pub fn </span>new(x: bool, y: bool, z: bool) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ x, y, z }
     }
-    
+
     <span class="doccomment">/// Mirror across the YZ plane.
     </span><span class="kw">pub fn </span>x() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(<span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>)
     }
-    
+
     <span class="doccomment">/// Mirror across the XZ plane.
     </span><span class="kw">pub fn </span>y() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(<span class="bool-val">false</span>, <span class="bool-val">true</span>, <span class="bool-val">false</span>)
     }
-    
+
     <span class="doccomment">/// Mirror across the XY plane.
     </span><span class="kw">pub fn </span>z() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(<span class="bool-val">false</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>)
@@ -104,25 +104,25 @@
         <span class="comment">// Number of reflection planes (to determine if we need to flip faces)
         </span><span class="kw">let </span>reflection_count = <span class="self">self</span>.x <span class="kw">as </span>u8 + <span class="self">self</span>.y <span class="kw">as </span>u8 + <span class="self">self</span>.z <span class="kw">as </span>u8;
         <span class="kw">let </span>flip_winding = reflection_count % <span class="number">2 </span>== <span class="number">1</span>;
-        
+
         <span class="comment">// Apply mirroring to vertices
         </span><span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;mut </span>model.mesh.vertices {
             <span class="kw">if </span><span class="self">self</span>.x {
                 vertex.position.x = -vertex.position.x;
                 vertex.normal.x = -vertex.normal.x;
             }
-            
+
             <span class="kw">if </span><span class="self">self</span>.y {
                 vertex.position.y = -vertex.position.y;
                 vertex.normal.y = -vertex.normal.y;
             }
-            
+
             <span class="kw">if </span><span class="self">self</span>.z {
                 vertex.position.z = -vertex.position.z;
                 vertex.normal.z = -vertex.normal.z;
             }
         }
-        
+
         <span class="comment">// If we need to flip the winding order to maintain correct face orientation
         </span><span class="kw">if </span>flip_winding {
             <span class="kw">for </span>face <span class="kw">in </span><span class="kw-2">&amp;mut </span>model.mesh.faces {
@@ -132,7 +132,8 @@
                 }
             }
         }
-        
+
         <span class="prelude-val">Ok</span>(())
     }
-} </code></pre></div></section></main></body></html>
+}
+</code></pre></div></section></main></body></html>

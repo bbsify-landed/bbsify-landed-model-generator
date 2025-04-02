@@ -54,9 +54,9 @@
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
-<a href="#56" id="56">56</a></pre></div><pre class="rust"><code><span class="kw">use </span>nalgebra::{Vector3, Rotation3};
+<a href="#56" id="56">56</a></pre></div><pre class="rust"><code><span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>, Transform};
+<span class="kw">use </span>nalgebra::{Rotation3, Vector3};
 <span class="kw">use </span>std::f32::consts::PI;
-<span class="kw">use crate</span>::{Model, Transform, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Rotates a model around an axis.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
@@ -73,17 +73,17 @@
             angle_rad: angle_degrees * PI / <span class="number">180.0</span>,
         }
     }
-    
+
     <span class="doccomment">/// Rotate around the X axis.
     </span><span class="kw">pub fn </span>around_x(angle_degrees: f32) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(Vector3::new(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>), angle_degrees)
     }
-    
+
     <span class="doccomment">/// Rotate around the Y axis.
     </span><span class="kw">pub fn </span>around_y(angle_degrees: f32) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(Vector3::new(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>), angle_degrees)
     }
-    
+
     <span class="doccomment">/// Rotate around the Z axis.
     </span><span class="kw">pub fn </span>around_z(angle_degrees: f32) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>), angle_degrees)
@@ -94,7 +94,7 @@
     <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, model: <span class="kw-2">&amp;mut </span>Model) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>unit_axis = nalgebra::Unit::new_normalize(<span class="self">self</span>.axis);
         <span class="kw">let </span>rotation = Rotation3::from_axis_angle(<span class="kw-2">&amp;</span>unit_axis, <span class="self">self</span>.angle_rad);
-        
+
         <span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;mut </span>model.mesh.vertices {
             <span class="comment">// Rotate position
             </span><span class="kw">let </span>position = <span class="kw-2">&amp;mut </span>vertex.position;
@@ -102,11 +102,12 @@
             position.x = rotated_position.x;
             position.y = rotated_position.y;
             position.z = rotated_position.z;
-            
+
             <span class="comment">// Rotate normal
             </span>vertex.normal = rotation * vertex.normal;
         }
-        
+
         <span class="prelude-val">Ok</span>(())
     }
-} </code></pre></div></section></main></body></html>
+}
+</code></pre></div></section></main></body></html>

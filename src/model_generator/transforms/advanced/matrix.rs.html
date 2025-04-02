@@ -50,8 +50,16 @@
 <a href="#49" id="49">49</a>
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
-<a href="#52" id="52">52</a></pre></div><pre class="rust"><code><span class="kw">use </span>nalgebra::{Matrix4, Point3, Vector3};
-<span class="kw">use crate</span>::{Model, Transform, <span class="prelude-ty">Result</span>, Error};
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a></pre></div><pre class="rust"><code><span class="kw">use crate</span>::{Error, Model, <span class="prelude-ty">Result</span>, Transform};
+<span class="kw">use </span>nalgebra::{Matrix4, Point3, Vector3};
 
 <span class="doccomment">/// Applies a general 4x4 transformation matrix to a model.
 </span><span class="attr">#[derive(Debug, Clone)]
@@ -64,9 +72,15 @@
     <span class="doccomment">/// Create a new matrix transformation.
     </span><span class="kw">pub fn </span>new(matrix: Matrix4&lt;f32&gt;) -&gt; <span class="self">Self </span>{
         <span class="comment">// Compute the normal transformation matrix (inverse transpose)
-        </span><span class="kw">let </span>normal_matrix = matrix.try_inverse().unwrap_or_else(Matrix4::identity).transpose();
-        
-        <span class="self">Self </span>{ matrix, normal_matrix }
+        </span><span class="kw">let </span>normal_matrix = matrix
+            .try_inverse()
+            .unwrap_or_else(Matrix4::identity)
+            .transpose();
+
+        <span class="self">Self </span>{
+            matrix,
+            normal_matrix,
+        }
     }
 }
 
@@ -75,8 +89,9 @@
         <span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;mut </span>model.mesh.vertices {
             <span class="comment">// Transform position with the full matrix
             </span><span class="kw">let </span>position = <span class="kw-2">&amp;mut </span>vertex.position;
-            <span class="kw">let </span>homogeneous = <span class="self">self</span>.matrix * Point3::new(position.x, position.y, position.z).to_homogeneous();
-            
+            <span class="kw">let </span>homogeneous =
+                <span class="self">self</span>.matrix * Point3::new(position.x, position.y, position.z).to_homogeneous();
+
             <span class="kw">if </span>homogeneous.w != <span class="number">0.0 </span>{
                 position.x = homogeneous.x / homogeneous.w;
                 position.y = homogeneous.y / homogeneous.w;
@@ -86,19 +101,21 @@
                     <span class="string">"Matrix transformation resulted in point at infinity"</span>.to_string(),
                 ));
             }
-            
+
             <span class="comment">// Transform normal with the normal matrix
             </span><span class="kw">let </span>normal = <span class="kw-2">&amp;mut </span>vertex.normal;
-            <span class="kw">let </span>transformed_normal = <span class="self">self</span>.normal_matrix * Vector3::new(normal.x, normal.y, normal.z).to_homogeneous();
+            <span class="kw">let </span>transformed_normal =
+                <span class="self">self</span>.normal_matrix * Vector3::new(normal.x, normal.y, normal.z).to_homogeneous();
             normal.x = transformed_normal.x;
             normal.y = transformed_normal.y;
             normal.z = transformed_normal.z;
-            
+
             <span class="kw">if </span>normal.magnitude() &gt; <span class="number">0.0 </span>{
                 <span class="kw-2">*</span>normal = normal.normalize();
             }
         }
-        
+
         <span class="prelude-val">Ok</span>(())
     }
-} </code></pre></div></section></main></body></html>
+}
+</code></pre></div></section></main></body></html>

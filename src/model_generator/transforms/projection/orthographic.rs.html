@@ -111,8 +111,9 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a></pre></div><pre class="rust"><code><span class="kw">use </span>nalgebra::{Vector3, UnitVector3};
-<span class="kw">use crate</span>::{Model, Transform, <span class="prelude-ty">Result</span>};
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a></pre></div><pre class="rust"><code><span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>, Transform};
+<span class="kw">use </span>nalgebra::{UnitVector3, Vector3};
 
 <span class="doccomment">/// Applies an orthographic projection to a model.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
@@ -123,7 +124,7 @@
 
 <span class="kw">impl </span>Orthographic {
     <span class="doccomment">/// Create a new orthographic projection transformation.
-    /// 
+    ///
     /// # Arguments
     /// * `direction` - The direction of the projection (unit vector)
     /// * `preserve_z` - If true, original z-values are preserved; if false, z-values are flattened
@@ -133,17 +134,17 @@
             preserve_z,
         }
     }
-    
+
     <span class="doccomment">/// Create an orthographic projection onto the XY plane.
     </span><span class="kw">pub fn </span>onto_xy() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>), <span class="bool-val">false</span>)
     }
-    
+
     <span class="doccomment">/// Create an orthographic projection onto the XZ plane.
     </span><span class="kw">pub fn </span>onto_xz() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(Vector3::new(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>), <span class="bool-val">false</span>)
     }
-    
+
     <span class="doccomment">/// Create an orthographic projection onto the YZ plane.
     </span><span class="kw">pub fn </span>onto_yz() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new(Vector3::new(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>), <span class="bool-val">false</span>)
@@ -154,7 +155,7 @@
     <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, model: <span class="kw-2">&amp;mut </span>Model) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// If we want to preserve depth, we need to remember the original positions
         </span><span class="kw">let </span><span class="kw-2">mut </span>original_depths = Vec::new();
-        
+
         <span class="kw">if </span><span class="self">self</span>.preserve_z {
             <span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.vertices {
                 <span class="kw">let </span>pos = <span class="kw-2">&amp;</span>vertex.position;
@@ -163,42 +164,42 @@
                 original_depths.push(depth);
             }
         }
-        
+
         <span class="comment">// Create orthogonal basis where one vector is the direction
         // The orthonormal_basis method was removed in newer nalgebra versions
         // Creating an orthonormal basis manually:
         </span><span class="kw">let </span>dir = <span class="self">self</span>.direction.into_inner();
-        
+
         <span class="comment">// Create a vector that's not parallel to dir
         </span><span class="kw">let </span>not_parallel = <span class="kw">if </span>dir.x.abs() &gt; <span class="number">0.9 </span>{
             Vector3::new(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>)
         } <span class="kw">else </span>{
             Vector3::new(<span class="number">1.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>)
         };
-        
+
         <span class="comment">// Create two orthogonal vectors
         </span><span class="kw">let </span>u = UnitVector3::new_normalize(dir.cross(<span class="kw-2">&amp;</span>not_parallel));
         <span class="kw">let </span>v = UnitVector3::new_normalize(dir.cross(<span class="kw-2">&amp;</span>u));
-        
+
         <span class="kw">for </span>(i, vertex) <span class="kw">in </span>model.mesh.vertices.iter_mut().enumerate() {
             <span class="kw">let </span>position = <span class="kw-2">&amp;mut </span>vertex.position;
             <span class="kw">let </span>pos_vec = Vector3::new(position.x, position.y, position.z);
-            
+
             <span class="comment">// Project position onto the two basis vectors perpendicular to the direction
             </span><span class="kw">let </span>u_comp = u.dot(<span class="kw-2">&amp;</span>pos_vec);
             <span class="kw">let </span>v_comp = v.dot(<span class="kw-2">&amp;</span>pos_vec);
-            
-            <span class="comment">// Calculate the component along the projection direction 
+
+            <span class="comment">// Calculate the component along the projection direction
             </span><span class="kw">let </span>_dir_comp = <span class="self">self</span>.direction.dot(<span class="kw-2">&amp;</span>pos_vec);
-            
+
             <span class="comment">// New position is a combination of the u and v components
             // Need to convert UnitVector3 to Vector3 before multiplying
             </span><span class="kw">let </span>new_pos = u.into_inner() * u_comp + v.into_inner() * v_comp;
-            
+
             position.x = new_pos.x;
             position.y = new_pos.y;
             position.z = new_pos.z;
-            
+
             <span class="comment">// If preserving depth, restore the original depth along the direction
             </span><span class="kw">if </span><span class="self">self</span>.preserve_z &amp;&amp; i &lt; original_depths.len() {
                 <span class="kw">let </span>depth = original_depths[i];
@@ -207,11 +208,12 @@
                 position.y += depth_component.y;
                 position.z += depth_component.z;
             }
-            
+
             <span class="comment">// For orthographic projection, all normals in the projection direction become zero
             // and other components stay the same
-            </span>vertex.normal = vertex.normal - vertex.normal.dot(<span class="kw-2">&amp;</span><span class="self">self</span>.direction.into_inner()) * <span class="self">self</span>.direction.into_inner();
-            
+            </span>vertex.normal = vertex.normal
+                - vertex.normal.dot(<span class="kw-2">&amp;</span><span class="self">self</span>.direction.into_inner()) * <span class="self">self</span>.direction.into_inner();
+
             <span class="comment">// Re-normalize if the normal is not zero
             </span><span class="kw">if </span>vertex.normal.magnitude() &gt; <span class="number">1e-6 </span>{
                 vertex.normal = vertex.normal.normalize();
@@ -220,7 +222,8 @@
                 </span>vertex.normal = <span class="self">self</span>.direction.into_inner();
             }
         }
-        
+
         <span class="prelude-val">Ok</span>(())
     }
-} </code></pre></div></section></main></body></html>
+}
+</code></pre></div></section></main></body></html>
