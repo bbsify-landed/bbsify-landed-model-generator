@@ -562,8 +562,8 @@
 
     <span class="comment">// If promote flag is set, also copy the index file to the examples directory
     </span><span class="kw">if </span>promote {
-        <span class="kw">let </span>promoted_index_path = examples_dir.join(<span class="string">"index.md"</span>);
-        fs::copy(output_dir.join(<span class="string">"index.md"</span>), promoted_index_path)<span class="question-mark">?</span>;
+        <span class="kw">let </span>promoted_index_path = examples_dir.join(<span class="string">"README.md"</span>);
+        fs::copy(output_dir.join(<span class="string">"README.md"</span>), promoted_index_path)<span class="question-mark">?</span>;
     }
     <span class="prelude-val">Ok</span>(())
 }
