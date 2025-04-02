@@ -182,28 +182,13 @@
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a></pre></div><pre class="rust"><code><span class="doccomment">//! STL file format exporter.
+<a href="#184" id="184">184</a></pre></div><pre class="rust"><code><span class="doccomment">//! STL file format exporter.
 
-</span><span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>nalgebra::Vector3;
-<span class="kw">use </span>std::fs::File;
-<span class="kw">use </span>std::io::{BufWriter, Write};
+</span><span class="kw">use </span>std::fs::File;
+<span class="kw">use </span>std::io::{Write, BufWriter};
 <span class="kw">use </span>std::path::Path;
+<span class="kw">use </span>nalgebra::Vector3;
+<span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Export a model to STL format.
 ///
@@ -219,76 +204,68 @@
 </span><span class="kw">fn </span>export_ascii_stl&lt;P: AsRef&lt;Path&gt;&gt;(model: <span class="kw-2">&amp;</span>Model, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>file = File::create(path)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>writer = BufWriter::new(file);
-
+    
     <span class="comment">// Write header
     </span><span class="macro">writeln!</span>(writer, <span class="string">"solid {}"</span>, model.name)<span class="question-mark">?</span>;
-
+    
     <span class="comment">// Write each face as a triangle or triangulate non-triangular faces
     </span><span class="kw">for </span>face <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.faces {
-        <span class="kw">match </span>face.indices.len().cmp(<span class="kw-2">&amp;</span><span class="number">3</span>) {
-            std::cmp::Ordering::Less =&gt; {
-                <span class="comment">// Skip degenerate faces
-                </span><span class="kw">continue</span>;
-            }
-            std::cmp::Ordering::Equal =&gt; {
-                <span class="comment">// Simple triangle case
-                </span>write_stl_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>face.indices)<span class="question-mark">?</span>;
-            }
-            std::cmp::Ordering::Greater =&gt; {
-                <span class="comment">// Triangulate the face using a simple fan triangulation
-                // Note: This works for convex polygons but may not work well for concave ones
-                </span><span class="kw">let </span>v0 = face.indices[<span class="number">0</span>];
-                <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..face.indices.len() - <span class="number">1 </span>{
-                    <span class="kw">let </span>v1 = face.indices[i];
-                    <span class="kw">let </span>v2 = face.indices[i + <span class="number">1</span>];
-                    write_stl_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>[v0, v1, v2])<span class="question-mark">?</span>;
-                }
+        <span class="kw">if </span>face.indices.len() &lt; <span class="number">3 </span>{
+            <span class="comment">// Skip degenerate faces
+            </span><span class="kw">continue</span>;
+        } <span class="kw">else if </span>face.indices.len() == <span class="number">3 </span>{
+            <span class="comment">// Simple triangle case
+            </span>write_stl_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>face.indices)<span class="question-mark">?</span>;
+        } <span class="kw">else </span>{
+            <span class="comment">// Triangulate the face using a simple fan triangulation
+            // Note: This works for convex polygons but may not work well for concave ones
+            </span><span class="kw">let </span>v0 = face.indices[<span class="number">0</span>];
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..face.indices.len() - <span class="number">1 </span>{
+                <span class="kw">let </span>v1 = face.indices[i];
+                <span class="kw">let </span>v2 = face.indices[i + <span class="number">1</span>];
+                write_stl_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>[v0, v1, v2])<span class="question-mark">?</span>;
             }
         }
     }
-
+    
     <span class="comment">// Write footer
     </span><span class="macro">writeln!</span>(writer, <span class="string">"endsolid {}"</span>, model.name)<span class="question-mark">?</span>;
-
+    
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Write a single triangle to the STL file.
-</span><span class="kw">fn </span>write_stl_triangle&lt;W: Write&gt;(writer: <span class="kw-2">&amp;mut </span>W, model: <span class="kw-2">&amp;</span>Model, indices: <span class="kw-2">&amp;</span>[usize]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">fn </span>write_stl_triangle&lt;W: Write&gt;(
+    writer: <span class="kw-2">&amp;mut </span>W,
+    model: <span class="kw-2">&amp;</span>Model,
+    indices: <span class="kw-2">&amp;</span>[usize],
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="comment">// Get the vertices
     </span><span class="kw">let </span>v0 = model.mesh.vertices[indices[<span class="number">0</span>]].position;
     <span class="kw">let </span>v1 = model.mesh.vertices[indices[<span class="number">1</span>]].position;
     <span class="kw">let </span>v2 = model.mesh.vertices[indices[<span class="number">2</span>]].position;
-
+    
     <span class="comment">// Calculate face normal if needed (STL requires normals)
     </span><span class="kw">let </span>normal = calculate_normal(v0, v1, v2);
-
+    
     <span class="comment">// Write the triangle
-    </span><span class="macro">writeln!</span>(
-        writer,
-        <span class="string">"  facet normal {} {} {}"</span>,
-        normal.x, normal.y, normal.z
-    )<span class="question-mark">?</span>;
+    </span><span class="macro">writeln!</span>(writer, <span class="string">"  facet normal {} {} {}"</span>, normal.x, normal.y, normal.z)<span class="question-mark">?</span>;
     <span class="macro">writeln!</span>(writer, <span class="string">"    outer loop"</span>)<span class="question-mark">?</span>;
     <span class="macro">writeln!</span>(writer, <span class="string">"      vertex {} {} {}"</span>, v0.x, v0.y, v0.z)<span class="question-mark">?</span>;
     <span class="macro">writeln!</span>(writer, <span class="string">"      vertex {} {} {}"</span>, v1.x, v1.y, v1.z)<span class="question-mark">?</span>;
     <span class="macro">writeln!</span>(writer, <span class="string">"      vertex {} {} {}"</span>, v2.x, v2.y, v2.z)<span class="question-mark">?</span>;
     <span class="macro">writeln!</span>(writer, <span class="string">"    endloop"</span>)<span class="question-mark">?</span>;
     <span class="macro">writeln!</span>(writer, <span class="string">"  endfacet"</span>)<span class="question-mark">?</span>;
-
+    
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Calculate the normal for a triangle.
-</span><span class="kw">fn </span>calculate_normal(
-    v0: nalgebra::Point3&lt;f32&gt;,
-    v1: nalgebra::Point3&lt;f32&gt;,
-    v2: nalgebra::Point3&lt;f32&gt;,
-) -&gt; Vector3&lt;f32&gt; {
+</span><span class="kw">fn </span>calculate_normal(v0: nalgebra::Point3&lt;f32&gt;, v1: nalgebra::Point3&lt;f32&gt;, v2: nalgebra::Point3&lt;f32&gt;) -&gt; Vector3&lt;f32&gt; {
     <span class="kw">let </span>edge1 = v1 - v0;
     <span class="kw">let </span>edge2 = v2 - v0;
     <span class="kw">let </span>normal = edge1.cross(<span class="kw-2">&amp;</span>edge2);
-
+    
     <span class="comment">// Return normalized vector or a default if degenerate
     </span><span class="kw">if </span>normal.magnitude() &gt; <span class="number">1e-6 </span>{
         normal.normalize()
@@ -298,102 +275,94 @@
 }
 
 <span class="doccomment">/// Export a model to binary STL format.
-///
+/// 
 /// Binary STL is more compact but less human-readable than ASCII STL.
 /// This function is provided for completeness but not currently exposed.
 </span><span class="attr">#[allow(dead_code)]
 </span><span class="kw">fn </span>export_binary_stl&lt;P: AsRef&lt;Path&gt;&gt;(model: <span class="kw-2">&amp;</span>Model, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>file = File::create(path)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>writer = BufWriter::new(file);
-
+    
     <span class="comment">// Header (80 bytes)
-    </span><span class="kw">let </span>header = <span class="macro">format!</span>(
-        <span class="string">"Binary STL generated by model-generator - Model: {}"</span>,
-        model.name
-    );
+    </span><span class="kw">let </span>header = <span class="macro">format!</span>(<span class="string">"Binary STL generated by model-generator - Model: {}"</span>, model.name);
     <span class="kw">let </span>header_bytes = header.as_bytes();
     <span class="kw">let </span>header_len = header_bytes.len().min(<span class="number">80</span>);
     <span class="kw">let </span><span class="kw-2">mut </span>full_header = <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="number">80</span>];
     full_header[..header_len].copy_from_slice(<span class="kw-2">&amp;</span>header_bytes[..header_len]);
     writer.write_all(<span class="kw-2">&amp;</span>full_header)<span class="question-mark">?</span>;
-
+    
     <span class="comment">// Count triangles
     </span><span class="kw">let </span><span class="kw-2">mut </span>triangle_count = <span class="number">0</span>;
     <span class="kw">for </span>face <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.faces {
-        <span class="kw">match </span>face.indices.len().cmp(<span class="kw-2">&amp;</span><span class="number">3</span>) {
-            std::cmp::Ordering::Less =&gt; {
-                <span class="kw">continue</span>;
-            }
-            std::cmp::Ordering::Equal =&gt; {
-                triangle_count += <span class="number">1</span>;
-            }
-            std::cmp::Ordering::Greater =&gt; {
-                triangle_count += face.indices.len() - <span class="number">2</span>;
-            }
+        <span class="kw">if </span>face.indices.len() &lt; <span class="number">3 </span>{
+            <span class="kw">continue</span>;
+        } <span class="kw">else if </span>face.indices.len() == <span class="number">3 </span>{
+            triangle_count += <span class="number">1</span>;
+        } <span class="kw">else </span>{
+            triangle_count += face.indices.len() - <span class="number">2</span>;
         }
     }
-
+    
     <span class="comment">// Write triangle count (4 bytes)
     </span>writer.write_all(<span class="kw-2">&amp;</span>(triangle_count <span class="kw">as </span>u32).to_le_bytes())<span class="question-mark">?</span>;
-
+    
     <span class="comment">// Write each triangle
     </span><span class="kw">for </span>face <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.faces {
-        <span class="kw">match </span>face.indices.len().cmp(<span class="kw-2">&amp;</span><span class="number">3</span>) {
-            std::cmp::Ordering::Less =&gt; {
-                <span class="comment">// Skip degenerate faces
-                </span><span class="kw">continue</span>;
-            }
-            std::cmp::Ordering::Equal =&gt; {
-                <span class="comment">// Simple triangle case
-                </span>write_binary_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>face.indices)<span class="question-mark">?</span>;
-            }
-            std::cmp::Ordering::Greater =&gt; {
-                <span class="comment">// Triangulate the face
-                </span><span class="kw">let </span>v0 = face.indices[<span class="number">0</span>];
-                <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..face.indices.len() - <span class="number">1 </span>{
-                    <span class="kw">let </span>v1 = face.indices[i];
-                    <span class="kw">let </span>v2 = face.indices[i + <span class="number">1</span>];
-                    write_binary_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>[v0, v1, v2])<span class="question-mark">?</span>;
-                }
+        <span class="kw">if </span>face.indices.len() &lt; <span class="number">3 </span>{
+            <span class="comment">// Skip degenerate faces
+            </span><span class="kw">continue</span>;
+        } <span class="kw">else if </span>face.indices.len() == <span class="number">3 </span>{
+            <span class="comment">// Simple triangle case
+            </span>write_binary_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>face.indices)<span class="question-mark">?</span>;
+        } <span class="kw">else </span>{
+            <span class="comment">// Triangulate the face
+            </span><span class="kw">let </span>v0 = face.indices[<span class="number">0</span>];
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..face.indices.len() - <span class="number">1 </span>{
+                <span class="kw">let </span>v1 = face.indices[i];
+                <span class="kw">let </span>v2 = face.indices[i + <span class="number">1</span>];
+                write_binary_triangle(<span class="kw-2">&amp;mut </span>writer, model, <span class="kw-2">&amp;</span>[v0, v1, v2])<span class="question-mark">?</span>;
             }
         }
     }
-
+    
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Write a single triangle to the binary STL file.
 </span><span class="attr">#[allow(dead_code)]
-</span><span class="kw">fn </span>write_binary_triangle&lt;W: Write&gt;(writer: <span class="kw-2">&amp;mut </span>W, model: <span class="kw-2">&amp;</span>Model, indices: <span class="kw-2">&amp;</span>[usize]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">fn </span>write_binary_triangle&lt;W: Write&gt;(
+    writer: <span class="kw-2">&amp;mut </span>W,
+    model: <span class="kw-2">&amp;</span>Model,
+    indices: <span class="kw-2">&amp;</span>[usize],
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="comment">// Get the vertices
     </span><span class="kw">let </span>v0 = model.mesh.vertices[indices[<span class="number">0</span>]].position;
     <span class="kw">let </span>v1 = model.mesh.vertices[indices[<span class="number">1</span>]].position;
     <span class="kw">let </span>v2 = model.mesh.vertices[indices[<span class="number">2</span>]].position;
-
+    
     <span class="comment">// Calculate face normal
     </span><span class="kw">let </span>normal = calculate_normal(v0, v1, v2);
-
+    
     <span class="comment">// Write normal (12 bytes)
     </span>writer.write_all(<span class="kw-2">&amp;</span>normal.x.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>normal.y.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>normal.z.to_le_bytes())<span class="question-mark">?</span>;
-
+    
     <span class="comment">// Write vertices (36 bytes)
     </span>writer.write_all(<span class="kw-2">&amp;</span>v0.x.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>v0.y.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>v0.z.to_le_bytes())<span class="question-mark">?</span>;
-
+    
     writer.write_all(<span class="kw-2">&amp;</span>v1.x.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>v1.y.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>v1.z.to_le_bytes())<span class="question-mark">?</span>;
-
+    
     writer.write_all(<span class="kw-2">&amp;</span>v2.x.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>v2.y.to_le_bytes())<span class="question-mark">?</span>;
     writer.write_all(<span class="kw-2">&amp;</span>v2.z.to_le_bytes())<span class="question-mark">?</span>;
-
+    
     <span class="comment">// Attribute byte count (2 bytes) - usually zero
     </span>writer.write_all(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">0</span>])<span class="question-mark">?</span>;
-
+    
     <span class="prelude-val">Ok</span>(())
-}
-</code></pre></div></section></main></body></html>
+}</code></pre></div></section></main></body></html>

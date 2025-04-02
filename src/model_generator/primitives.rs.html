@@ -424,59 +424,10 @@
 <a href="#423" id="423">423</a>
 <a href="#424" id="424">424</a>
 <a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
-<a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a></pre></div><pre class="rust"><code><span class="doccomment">//! Primitive 3D shapes that can be used as building blocks.
+<a href="#426" id="426">426</a></pre></div><pre class="rust"><code><span class="doccomment">//! Primitive 3D shapes that can be used as building blocks.
 
-</span><span class="kw">use crate</span>::{Face, Model, Vertex};
-<span class="kw">use </span>nalgebra::{Point3, Vector3};
+</span><span class="kw">use </span>nalgebra::{Point3, Vector3};
+<span class="kw">use crate</span>::{Model, Vertex, Face};
 
 <span class="doccomment">/// Builder for creating a cube primitive.
 </span><span class="kw">pub struct </span>Cube {
@@ -494,138 +445,109 @@
             with_uvs: <span class="bool-val">true</span>,
         }
     }
-
+    
     <span class="doccomment">/// Set the size of the cube.
     </span><span class="kw">pub fn </span>size(<span class="kw-2">mut </span><span class="self">self</span>, size: f32) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(size &gt; <span class="number">0.0</span>, <span class="string">"Cube size must be positive"</span>);
         <span class="self">self</span>.size = size;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set the center position of the cube.
     </span><span class="kw">pub fn </span>center(<span class="kw-2">mut </span><span class="self">self</span>, x: f32, y: f32, z: f32) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.center = (x, y, z);
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set whether to generate texture coordinates.
     </span><span class="kw">pub fn </span>with_uvs(<span class="kw-2">mut </span><span class="self">self</span>, with_uvs: bool) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.with_uvs = with_uvs;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Build the cube model.
     </span><span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; Model {
         <span class="kw">let </span><span class="kw-2">mut </span>model = Model::new(<span class="string">"Cube"</span>);
         <span class="kw">let </span>half = <span class="self">self</span>.size / <span class="number">2.0</span>;
         <span class="kw">let </span>(cx, cy, cz) = <span class="self">self</span>.center;
-
+        
         <span class="comment">// Create vertices (8 corners of the cube)
-        </span><span class="kw">let </span>v0 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx - half, cy - half, cz + half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>), <span class="comment">// Normals will be computed later
-            </span><span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">0.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
-        <span class="kw">let </span>v1 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx + half, cy - half, cz + half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
-            <span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">0.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
-        <span class="kw">let </span>v2 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx + half, cy + half, cz + half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
-            <span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">1.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
-        <span class="kw">let </span>v3 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx - half, cy + half, cz + half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
-            <span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">1.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
-        <span class="kw">let </span>v4 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx - half, cy - half, cz - half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
-            <span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">0.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
-        <span class="kw">let </span>v5 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx - half, cy + half, cz - half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
-            <span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">1.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
-        <span class="kw">let </span>v6 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx + half, cy + half, cz - half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
-            <span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">1.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
-        <span class="kw">let </span>v7 = model.mesh.add_vertex(Vertex::new(
-            Point3::new(cx + half, cy - half, cz - half),
-            Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
-            <span class="kw">if </span><span class="self">self</span>.with_uvs {
-                <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">0.0</span>))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>},
-        ));
-
+        </span><span class="kw">let </span>vertices = [
+            <span class="comment">// Front face
+            </span>Vertex::new(
+                Point3::new(cx - half, cy - half, cz + half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">0.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+            Vertex::new(
+                Point3::new(cx + half, cy - half, cz + half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">0.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+            Vertex::new(
+                Point3::new(cx + half, cy + half, cz + half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">1.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+            Vertex::new(
+                Point3::new(cx - half, cy + half, cz + half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">1.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+            
+            <span class="comment">// Back face
+            </span>Vertex::new(
+                Point3::new(cx - half, cy - half, cz - half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, -<span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">0.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+            Vertex::new(
+                Point3::new(cx - half, cy + half, cz - half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, -<span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">1.0</span>, <span class="number">1.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+            Vertex::new(
+                Point3::new(cx + half, cy + half, cz - half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, -<span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">1.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+            Vertex::new(
+                Point3::new(cx + half, cy - half, cz - half),
+                Vector3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, -<span class="number">1.0</span>),
+                <span class="kw">if </span><span class="self">self</span>.with_uvs { <span class="prelude-val">Some</span>((<span class="number">0.0</span>, <span class="number">0.0</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>},
+            ),
+        ];
+        
+        <span class="comment">// Add vertices to mesh
+        </span><span class="kw">let </span><span class="kw-2">mut </span>indices = Vec::new();
+        <span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;</span>vertices {
+            indices.push(model.mesh.add_vertex(vertex.clone()));
+        }
+        
         <span class="comment">// Define faces (6 faces of the cube, each as 2 triangles)
-        // Front face (z+)
-        </span>model.mesh.add_face(Face::triangle(v0, v1, v2), <span class="prelude-val">None</span>);
-        model.mesh.add_face(Face::triangle(v0, v2, v3), <span class="prelude-val">None</span>);
-
-        <span class="comment">// Back face (z-)
-        </span>model.mesh.add_face(Face::triangle(v4, v5, v6), <span class="prelude-val">None</span>);
-        model.mesh.add_face(Face::triangle(v4, v6, v7), <span class="prelude-val">None</span>);
-
-        <span class="comment">// Top face (y+)
-        </span>model.mesh.add_face(Face::triangle(v3, v2, v6), <span class="prelude-val">None</span>);
-        model.mesh.add_face(Face::triangle(v3, v6, v5), <span class="prelude-val">None</span>);
-
-        <span class="comment">// Bottom face (y-)
-        </span>model.mesh.add_face(Face::triangle(v0, v4, v7), <span class="prelude-val">None</span>);
-        model.mesh.add_face(Face::triangle(v0, v7, v1), <span class="prelude-val">None</span>);
-
-        <span class="comment">// Right face (x+)
-        </span>model.mesh.add_face(Face::triangle(v1, v7, v6), <span class="prelude-val">None</span>);
-        model.mesh.add_face(Face::triangle(v1, v6, v2), <span class="prelude-val">None</span>);
-
-        <span class="comment">// Left face (x-)
-        </span>model.mesh.add_face(Face::triangle(v0, v3, v5), <span class="prelude-val">None</span>);
-        model.mesh.add_face(Face::triangle(v0, v5, v4), <span class="prelude-val">None</span>);
-
+        // Front face
+        </span>model.mesh.add_face(Face::triangle(indices[<span class="number">0</span>], indices[<span class="number">1</span>], indices[<span class="number">2</span>]), <span class="prelude-val">None</span>);
+        model.mesh.add_face(Face::triangle(indices[<span class="number">0</span>], indices[<span class="number">2</span>], indices[<span class="number">3</span>]), <span class="prelude-val">None</span>);
+        
+        <span class="comment">// Back face
+        </span>model.mesh.add_face(Face::triangle(indices[<span class="number">4</span>], indices[<span class="number">5</span>], indices[<span class="number">6</span>]), <span class="prelude-val">None</span>);
+        model.mesh.add_face(Face::triangle(indices[<span class="number">4</span>], indices[<span class="number">6</span>], indices[<span class="number">7</span>]), <span class="prelude-val">None</span>);
+        
+        <span class="comment">// Top face
+        </span>model.mesh.add_face(Face::triangle(indices[<span class="number">3</span>], indices[<span class="number">2</span>], indices[<span class="number">6</span>]), <span class="prelude-val">None</span>);
+        model.mesh.add_face(Face::triangle(indices[<span class="number">3</span>], indices[<span class="number">6</span>], indices[<span class="number">5</span>]), <span class="prelude-val">None</span>);
+        
+        <span class="comment">// Bottom face
+        </span>model.mesh.add_face(Face::triangle(indices[<span class="number">0</span>], indices[<span class="number">4</span>], indices[<span class="number">7</span>]), <span class="prelude-val">None</span>);
+        model.mesh.add_face(Face::triangle(indices[<span class="number">0</span>], indices[<span class="number">7</span>], indices[<span class="number">1</span>]), <span class="prelude-val">None</span>);
+        
+        <span class="comment">// Right face
+        </span>model.mesh.add_face(Face::triangle(indices[<span class="number">1</span>], indices[<span class="number">7</span>], indices[<span class="number">6</span>]), <span class="prelude-val">None</span>);
+        model.mesh.add_face(Face::triangle(indices[<span class="number">1</span>], indices[<span class="number">6</span>], indices[<span class="number">2</span>]), <span class="prelude-val">None</span>);
+        
+        <span class="comment">// Left face
+        </span>model.mesh.add_face(Face::triangle(indices[<span class="number">0</span>], indices[<span class="number">3</span>], indices[<span class="number">5</span>]), <span class="prelude-val">None</span>);
+        model.mesh.add_face(Face::triangle(indices[<span class="number">0</span>], indices[<span class="number">5</span>], indices[<span class="number">4</span>]), <span class="prelude-val">None</span>);
+        
         model
     }
 }
@@ -654,94 +576,82 @@
             rings: <span class="number">16</span>,
         }
     }
-
+    
     <span class="doccomment">/// Set the radius of the sphere.
     </span><span class="kw">pub fn </span>radius(<span class="kw-2">mut </span><span class="self">self</span>, radius: f32) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(radius &gt; <span class="number">0.0</span>, <span class="string">"Sphere radius must be positive"</span>);
         <span class="self">self</span>.radius = radius;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set the center position of the sphere.
     </span><span class="kw">pub fn </span>center(<span class="kw-2">mut </span><span class="self">self</span>, x: f32, y: f32, z: f32) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.center = (x, y, z);
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set the number of horizontal segments (longitude).
     </span><span class="kw">pub fn </span>segments(<span class="kw-2">mut </span><span class="self">self</span>, segments: usize) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(segments &gt;= <span class="number">3</span>, <span class="string">"Sphere must have at least 3 segments"</span>);
         <span class="self">self</span>.segments = segments;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set the number of vertical rings (latitude).
     </span><span class="kw">pub fn </span>rings(<span class="kw-2">mut </span><span class="self">self</span>, rings: usize) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(rings &gt;= <span class="number">2</span>, <span class="string">"Sphere must have at least 2 rings"</span>);
         <span class="self">self</span>.rings = rings;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Build the sphere model.
     </span><span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; Model {
         <span class="kw">let </span><span class="kw-2">mut </span>model = Model::new(<span class="string">"Sphere"</span>);
         <span class="kw">let </span>(cx, cy, cz) = <span class="self">self</span>.center;
-
+        
         <span class="comment">// Add top vertex
         </span><span class="kw">let </span>top_idx = model.mesh.add_vertex(Vertex::new(
             Point3::new(cx, cy + <span class="self">self</span>.radius, cz),
             Vector3::new(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>),
             <span class="prelude-val">Some</span>((<span class="number">0.5</span>, <span class="number">1.0</span>)),
         ));
-
+        
         <span class="comment">// Add bottom vertex
         </span><span class="kw">let </span>bottom_idx = model.mesh.add_vertex(Vertex::new(
             Point3::new(cx, cy - <span class="self">self</span>.radius, cz),
             Vector3::new(<span class="number">0.0</span>, -<span class="number">1.0</span>, <span class="number">0.0</span>),
             <span class="prelude-val">Some</span>((<span class="number">0.5</span>, <span class="number">0.0</span>)),
         ));
-
+        
         <span class="comment">// Generate vertices for rings
         </span><span class="kw">let </span><span class="kw-2">mut </span>ring_indices = Vec::new();
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.rings - <span class="number">1 </span>{
             <span class="kw">let </span>phi = std::f32::consts::PI * (i <span class="kw">as </span>f32 + <span class="number">1.0</span>) / <span class="self">self</span>.rings <span class="kw">as </span>f32;
-            <span class="kw">let </span>cos_phi = phi.cos();
-            <span class="kw">let </span>sin_phi = phi.sin();
-
-            <span class="kw">let </span>y = cy + <span class="self">self</span>.radius * cos_phi;
-            <span class="kw">let </span>ring_radius = <span class="self">self</span>.radius * sin_phi;
-
+            <span class="kw">let </span>y = cy + <span class="self">self</span>.radius * phi.cos();
+            <span class="kw">let </span>ring_radius = <span class="self">self</span>.radius * phi.sin();
+            
             <span class="kw">let </span><span class="kw-2">mut </span>ring = Vec::new();
             <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
                 <span class="kw">let </span>theta = <span class="number">2.0 </span>* std::f32::consts::PI * j <span class="kw">as </span>f32 / <span class="self">self</span>.segments <span class="kw">as </span>f32;
-                <span class="kw">let </span>cos_theta = theta.cos();
-                <span class="kw">let </span>sin_theta = theta.sin();
-
-                <span class="kw">let </span>x = cx + ring_radius * cos_theta;
-                <span class="kw">let </span>z = cz + ring_radius * sin_theta;
-
-                <span class="comment">// Properly calculate normalized normal vector
-                // For a sphere, the normal is simply the normalized direction from center to point
-                </span><span class="kw">let </span>nx = sin_phi * cos_theta;
-                <span class="kw">let </span>ny = cos_phi;
-                <span class="kw">let </span>nz = sin_phi * sin_theta;
-
-                <span class="comment">// Better UV mapping with proper wrapping
-                </span><span class="kw">let </span>u = j <span class="kw">as </span>f32 / <span class="self">self</span>.segments <span class="kw">as </span>f32;
+                <span class="kw">let </span>x = cx + ring_radius * theta.cos();
+                <span class="kw">let </span>z = cz + ring_radius * theta.sin();
+                
+                <span class="kw">let </span>nx = theta.cos() * phi.sin();
+                <span class="kw">let </span>ny = phi.cos();
+                <span class="kw">let </span>nz = theta.sin() * phi.sin();
+                
+                <span class="kw">let </span>u = j <span class="kw">as </span>f32 / <span class="self">self</span>.segments <span class="kw">as </span>f32;
                 <span class="kw">let </span>v = <span class="number">1.0 </span>- (i <span class="kw">as </span>f32 + <span class="number">1.0</span>) / <span class="self">self</span>.rings <span class="kw">as </span>f32;
-
+                
                 <span class="kw">let </span>idx = model.mesh.add_vertex(Vertex::new(
                     Point3::new(x, y, z),
                     Vector3::new(nx, ny, nz),
                     <span class="prelude-val">Some</span>((u, v)),
                 ));
-
+                
                 ring.push(idx);
             }
-
+            
             ring_indices.push(ring);
         }
-
+        
         <span class="comment">// Create faces for the top cap
         </span><span class="kw">let </span>first_ring = <span class="kw-2">&amp;</span>ring_indices[<span class="number">0</span>];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
@@ -751,24 +661,26 @@
                 <span class="prelude-val">None</span>,
             );
         }
-
+        
         <span class="comment">// Create faces for the middle rings
         </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.rings - <span class="number">2 </span>{
             <span class="kw">let </span>ring1 = <span class="kw-2">&amp;</span>ring_indices[i];
             <span class="kw">let </span>ring2 = <span class="kw-2">&amp;</span>ring_indices[i + <span class="number">1</span>];
-
+            
             <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
                 <span class="kw">let </span>next_j = (j + <span class="number">1</span>) % <span class="self">self</span>.segments;
-
-                model
-                    .mesh
-                    .add_face(Face::triangle(ring1[j], ring2[j], ring1[next_j]), <span class="prelude-val">None</span>);
-                model
-                    .mesh
-                    .add_face(Face::triangle(ring1[next_j], ring2[j], ring2[next_j]), <span class="prelude-val">None</span>);
+                
+                model.mesh.add_face(
+                    Face::triangle(ring1[j], ring2[j], ring1[next_j]),
+                    <span class="prelude-val">None</span>,
+                );
+                model.mesh.add_face(
+                    Face::triangle(ring1[next_j], ring2[j], ring2[next_j]),
+                    <span class="prelude-val">None</span>,
+                );
             }
         }
-
+        
         <span class="comment">// Create faces for the bottom cap
         </span><span class="kw">let </span>last_ring = <span class="kw-2">&amp;</span>ring_indices[<span class="self">self</span>.rings - <span class="number">2</span>];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
@@ -778,7 +690,7 @@
                 <span class="prelude-val">None</span>,
             );
         }
-
+        
         model
     }
 }
@@ -809,102 +721,92 @@
             caps: <span class="bool-val">true</span>,
         }
     }
-
+    
     <span class="doccomment">/// Set the radius of the cylinder.
     </span><span class="kw">pub fn </span>radius(<span class="kw-2">mut </span><span class="self">self</span>, radius: f32) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(radius &gt; <span class="number">0.0</span>, <span class="string">"Cylinder radius must be positive"</span>);
         <span class="self">self</span>.radius = radius;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set the height of the cylinder.
     </span><span class="kw">pub fn </span>height(<span class="kw-2">mut </span><span class="self">self</span>, height: f32) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(height &gt; <span class="number">0.0</span>, <span class="string">"Cylinder height must be positive"</span>);
         <span class="self">self</span>.height = height;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set the center position of the cylinder.
     </span><span class="kw">pub fn </span>center(<span class="kw-2">mut </span><span class="self">self</span>, x: f32, y: f32, z: f32) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.center = (x, y, z);
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set the number of segments around the circumference.
     </span><span class="kw">pub fn </span>segments(<span class="kw-2">mut </span><span class="self">self</span>, segments: usize) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(segments &gt;= <span class="number">3</span>, <span class="string">"Cylinder must have at least 3 segments"</span>);
         <span class="self">self</span>.segments = segments;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Set whether to generate end caps.
     </span><span class="kw">pub fn </span>caps(<span class="kw-2">mut </span><span class="self">self</span>, caps: bool) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.caps = caps;
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Build the cylinder model.
     </span><span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; Model {
         <span class="kw">let </span><span class="kw-2">mut </span>model = Model::new(<span class="string">"Cylinder"</span>);
         <span class="kw">let </span>(cx, cy, cz) = <span class="self">self</span>.center;
         <span class="kw">let </span>half_height = <span class="self">self</span>.height / <span class="number">2.0</span>;
-
+        
         <span class="comment">// Generate vertices for top and bottom rings
         </span><span class="kw">let </span><span class="kw-2">mut </span>top_indices = Vec::new();
         <span class="kw">let </span><span class="kw-2">mut </span>bottom_indices = Vec::new();
-
+        
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
             <span class="kw">let </span>theta = <span class="number">2.0 </span>* std::f32::consts::PI * i <span class="kw">as </span>f32 / <span class="self">self</span>.segments <span class="kw">as </span>f32;
-            <span class="kw">let </span>cos_theta = theta.cos();
-            <span class="kw">let </span>sin_theta = theta.sin();
-
-            <span class="kw">let </span>x = <span class="self">self</span>.radius * cos_theta;
-            <span class="kw">let </span>z = <span class="self">self</span>.radius * sin_theta;
-
-            <span class="comment">// Normal for side pointing outward (already normalized since cos²+sin²=1)
-            </span><span class="kw">let </span>nx = cos_theta;
-            <span class="kw">let </span>nz = sin_theta;
-
-            <span class="comment">// Texture coordinates with proper wrapping
+            <span class="kw">let </span>x = <span class="self">self</span>.radius * theta.cos();
+            <span class="kw">let </span>z = <span class="self">self</span>.radius * theta.sin();
+            
+            <span class="comment">// Normal for side pointing outward
+            </span><span class="kw">let </span>nx = theta.cos();
+            <span class="kw">let </span>nz = theta.sin();
+            
+            <span class="comment">// Texture coordinates
             </span><span class="kw">let </span>u = i <span class="kw">as </span>f32 / <span class="self">self</span>.segments <span class="kw">as </span>f32;
-
+            
             <span class="comment">// Top vertex
             </span><span class="kw">let </span>top_idx = model.mesh.add_vertex(Vertex::new(
                 Point3::new(cx + x, cy + half_height, cz + z),
                 Vector3::new(nx, <span class="number">0.0</span>, nz),
                 <span class="prelude-val">Some</span>((u, <span class="number">1.0</span>)),
             ));
-
+            
             <span class="comment">// Bottom vertex
             </span><span class="kw">let </span>bottom_idx = model.mesh.add_vertex(Vertex::new(
                 Point3::new(cx + x, cy - half_height, cz + z),
                 Vector3::new(nx, <span class="number">0.0</span>, nz),
                 <span class="prelude-val">Some</span>((u, <span class="number">0.0</span>)),
             ));
-
+            
             top_indices.push(top_idx);
             bottom_indices.push(bottom_idx);
         }
-
+        
         <span class="comment">// Create side faces
         </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
             <span class="kw">let </span>next_i = (i + <span class="number">1</span>) % <span class="self">self</span>.segments;
-
+            
             model.mesh.add_face(
                 Face::triangle(bottom_indices[i], top_indices[i], top_indices[next_i]),
                 <span class="prelude-val">None</span>,
             );
-
+            
             model.mesh.add_face(
-                Face::triangle(
-                    bottom_indices[i],
-                    top_indices[next_i],
-                    bottom_indices[next_i],
-                ),
+                Face::triangle(bottom_indices[i], top_indices[next_i], bottom_indices[next_i]),
                 <span class="prelude-val">None</span>,
             );
         }
-
+        
         <span class="comment">// Create caps if requested
         </span><span class="kw">if </span><span class="self">self</span>.caps {
             <span class="comment">// Center vertices for caps
@@ -913,13 +815,13 @@
                 Vector3::new(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>),
                 <span class="prelude-val">Some</span>((<span class="number">0.5</span>, <span class="number">0.5</span>)),
             ));
-
+            
             <span class="kw">let </span>bottom_center = model.mesh.add_vertex(Vertex::new(
                 Point3::new(cx, cy - half_height, cz),
                 Vector3::new(<span class="number">0.0</span>, -<span class="number">1.0</span>, <span class="number">0.0</span>),
                 <span class="prelude-val">Some</span>((<span class="number">0.5</span>, <span class="number">0.5</span>)),
             ));
-
+            
             <span class="comment">// Create top cap faces
             </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
                 <span class="kw">let </span>next_i = (i + <span class="number">1</span>) % <span class="self">self</span>.segments;
@@ -928,7 +830,7 @@
                     <span class="prelude-val">None</span>,
                 );
             }
-
+            
             <span class="comment">// Create bottom cap faces
             </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.segments {
                 <span class="kw">let </span>next_i = (i + <span class="number">1</span>) % <span class="self">self</span>.segments;
@@ -938,7 +840,7 @@
                 );
             }
         }
-
+        
         model
     }
 }
@@ -947,5 +849,4 @@
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new()
     }
-}
-</code></pre></div></section></main></body></html>
+} </code></pre></div></section></main></body></html>

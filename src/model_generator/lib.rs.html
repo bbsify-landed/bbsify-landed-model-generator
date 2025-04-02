@@ -86,12 +86,8 @@
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a></pre></div><pre class="rust"><code><span class="doccomment">//! A library for programmatically generating 3D models through transformations and plugins.
-//!
+<a href="#88" id="88">88</a></pre></div><pre class="rust"><code><span class="doccomment">//! A library for programmatically generating 3D models through transformations and plugins.
+//! 
 //! This crate provides tools for creating and manipulating 3D models with a focus on
 //! composable transformations and an extensible plugin system.
 
@@ -99,37 +95,33 @@
 <span class="kw">use </span>thiserror::Error;
 
 <span class="comment">// Re-exports for convenience
-</span><span class="kw">pub use </span>types::{Face, Mesh, Vertex};
+</span><span class="kw">pub use </span>types::{Vertex, Face, Mesh};
 
 <span class="comment">// Module declarations
-</span><span class="kw">pub mod </span>exporters;
-<span class="kw">pub mod </span>plugin;
-<span class="kw">pub mod </span>primitives;
+</span><span class="kw">pub mod </span>primitives;
 <span class="kw">pub mod </span>transforms;
+<span class="kw">pub mod </span>exporters;
 <span class="kw">pub mod </span>types;
-
-<span class="comment">// Re-export common transforms for convenience
-</span><span class="kw">pub use </span>transforms::advanced::{Matrix, Mirror, Quaternion};
-<span class="kw">pub use </span>transforms::basic::{Rotate, Scale, Translate};
+<span class="kw">pub mod </span>plugin;
 
 <span class="doccomment">/// Error types for the model-generator library.
 </span><span class="attr">#[derive(Error, Debug)]
 </span><span class="kw">pub enum </span>Error {
     <span class="attr">#[error(<span class="string">"IO error: {0}"</span>)]
     </span>IoError(<span class="attr">#[from] </span>std::io::Error),
-
+    
     <span class="attr">#[error(<span class="string">"Invalid model data: {0}"</span>)]
     </span>InvalidModelData(String),
-
+    
     <span class="attr">#[error(<span class="string">"Export error: {0}"</span>)]
     </span>ExportError(String),
-
+    
     <span class="attr">#[error(<span class="string">"Import error: {0}"</span>)]
     </span>ImportError(String),
-
+    
     <span class="attr">#[error(<span class="string">"Transform error: {0}"</span>)]
     </span>TransformError(String),
-
+    
     <span class="attr">#[error(<span class="string">"Plugin error: {0}"</span>)]
     </span>PluginError(String),
 }
@@ -154,23 +146,23 @@
             name: name.into(),
         }
     }
-
+    
     <span class="doccomment">/// Apply a transformation to this model.
     </span><span class="kw">pub fn </span>apply&lt;T: Transform&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, transform: T) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
         <span class="kw">let _ </span>= transform.apply(<span class="self">self</span>);
         <span class="self">self
     </span>}
-
+    
     <span class="doccomment">/// Export the model to OBJ format.
     </span><span class="kw">pub fn </span>export_obj&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         exporters::obj::export_obj(<span class="self">self</span>, path)
     }
-
+    
     <span class="doccomment">/// Export the model to STL format.
     </span><span class="kw">pub fn </span>export_stl&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         exporters::stl::export_stl(<span class="self">self</span>, path)
     }
-
+    
     <span class="doccomment">/// Export the model to glTF format.
     </span><span class="kw">pub fn </span>export_gltf&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         exporters::gltf::export_gltf(<span class="self">self</span>, path)
@@ -181,5 +173,4 @@
 </span><span class="kw">pub trait </span>Transform {
     <span class="doccomment">/// Apply the transformation to the given model.
     </span><span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, model: <span class="kw-2">&amp;mut </span>Model) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
-}
-</code></pre></div></section></main></body></html>
+} </code></pre></div></section></main></body></html>

@@ -327,28 +327,12 @@
 <a href="#326" id="326">326</a>
 <a href="#327" id="327">327</a>
 <a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a></pre></div><pre class="rust"><code><span class="doccomment">//! glTF file format exporter.
+<a href="#329" id="329">329</a></pre></div><pre class="rust"><code><span class="doccomment">//! glTF file format exporter.
 
-</span><span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>std::fs::File;
-<span class="kw">use </span>std::io::{BufWriter, Write};
+</span><span class="kw">use </span>std::fs::File;
+<span class="kw">use </span>std::io::{Write, BufWriter};
 <span class="kw">use </span>std::path::{Path, PathBuf};
+<span class="kw">use crate</span>::{Model, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Export a model to glTF format.
 ///
@@ -357,27 +341,27 @@
 /// This implementation creates a simple glTF 2.0 file with a binary buffer.
 </span><span class="kw">pub fn </span>export_gltf&lt;P: AsRef&lt;Path&gt;&gt;(model: <span class="kw-2">&amp;</span>Model, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>path = path.as_ref();
-
+    
     <span class="comment">// Make sure the path has the correct extension
     </span><span class="kw">let </span><span class="kw-2">mut </span>path_with_ext = PathBuf::from(path);
     <span class="kw">if </span>path_with_ext.extension().is_none_or(|ext| ext != <span class="string">"gltf"</span>) {
         path_with_ext.set_extension(<span class="string">"gltf"</span>);
     }
-
+    
     <span class="comment">// Create the binary buffer file (.bin)
     </span><span class="kw">let </span>bin_path = path_with_ext.with_extension(<span class="string">"bin"</span>);
     <span class="kw">let </span>bin_filename = bin_path.file_name().unwrap().to_string_lossy().to_string();
-
+    
     <span class="comment">// Export the binary buffer
     </span>export_binary_buffer(model, <span class="kw-2">&amp;</span>bin_path)<span class="question-mark">?</span>;
-
+    
     <span class="comment">// Create the JSON file (.gltf)
     </span><span class="kw">let </span>json_file = File::create(path_with_ext)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>json_writer = BufWriter::new(json_file);
-
+    
     <span class="comment">// Get buffer size
     </span><span class="kw">let </span>buffer_size = calculate_buffer_size(model);
-
+    
     <span class="comment">// Write glTF JSON structure
     </span><span class="macro">write!</span>(
         json_writer,
@@ -463,116 +447,114 @@
 }}"#</span>,
         <span class="comment">// Node name
         </span>model.name,
+        
         <span class="comment">// Add TEXCOORD_0 to attributes if model has texture coordinates
         </span><span class="kw">if </span>model.mesh.vertices.iter().any(|v| v.tex_coords.is_some()) {
             <span class="string">",\n            \"TEXCOORD_0\": 3"
         </span>} <span class="kw">else </span>{
             <span class="string">""
         </span>},
+        
         <span class="comment">// Position accessor
         </span>model.mesh.vertices.len(),
+        
         <span class="comment">// Min bounds
-        </span>calculate_min_x(model),
-        calculate_min_y(model),
-        calculate_min_z(model),
+        </span>calculate_min_x(model), calculate_min_y(model), calculate_min_z(model),
+        
         <span class="comment">// Max bounds
-        </span>calculate_max_x(model),
-        calculate_max_y(model),
-        calculate_max_z(model),
+        </span>calculate_max_x(model), calculate_max_y(model), calculate_max_z(model),
+        
         <span class="comment">// Normal accessor count
         </span>model.mesh.vertices.len(),
+        
         <span class="comment">// Index accessor count
         </span>count_indices(model),
+        
         <span class="comment">// Add TEXCOORD_0 accessor if needed
         </span><span class="kw">if </span>model.mesh.vertices.iter().any(|v| v.tex_coords.is_some()) {
-            <span class="macro">format!</span>(
-                <span class="string">r#",
+            <span class="macro">format!</span>(<span class="string">r#",
     {{
       "bufferView": 3,
       "componentType": 5126,
       "count": {},
       "type": "VEC2"
-    }}"#</span>,
-                model.mesh.vertices.len()
-            )
+    }}"#</span>, model.mesh.vertices.len())
         } <span class="kw">else </span>{
             String::new()
         },
+        
         <span class="comment">// Position buffer view
         </span>model.mesh.vertices.len() * <span class="number">12</span>, <span class="comment">// 3 floats * 4 bytes
+        
         // Normal buffer view
         </span>model.mesh.vertices.len() * <span class="number">12</span>, <span class="comment">// offset
         </span>model.mesh.vertices.len() * <span class="number">12</span>, <span class="comment">// 3 floats * 4 bytes
+        
         // Index buffer view
         </span>model.mesh.vertices.len() * <span class="number">24</span>, <span class="comment">// offset
         </span>count_indices(model) * <span class="number">2</span>,       <span class="comment">// 1 unsigned short * 2 bytes
+        
         // Add TEXCOORD_0 buffer view if needed
         </span><span class="kw">if </span>model.mesh.vertices.iter().any(|v| v.tex_coords.is_some()) {
-            <span class="macro">format!</span>(
-                <span class="string">r#",
+            <span class="macro">format!</span>(<span class="string">r#",
     {{
       "buffer": 0,
       "byteOffset": {},
       "byteLength": {},
       "target": 34962
-    }}"#</span>,
-                model.mesh.vertices.len() * <span class="number">24 </span>+ count_indices(model) * <span class="number">2</span>, <span class="comment">// offset
-                </span>model.mesh.vertices.len() * <span class="number">8
-            </span>) <span class="comment">// 2 floats * 4 bytes
+    }}"#</span>, 
+            model.mesh.vertices.len() * <span class="number">24 </span>+ count_indices(model) * <span class="number">2</span>, <span class="comment">// offset
+            </span>model.mesh.vertices.len() * <span class="number">8</span>)  <span class="comment">// 2 floats * 4 bytes
         </span>} <span class="kw">else </span>{
             String::new()
         },
+        
         <span class="comment">// Buffer URI
         </span>bin_filename,
+        
         <span class="comment">// Buffer size
         </span>buffer_size
     )<span class="question-mark">?</span>;
-
+    
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Calculate the total buffer size for the model.
 </span><span class="kw">fn </span>calculate_buffer_size(model: <span class="kw-2">&amp;</span>Model) -&gt; usize {
     <span class="kw">let </span>position_size = model.mesh.vertices.len() * <span class="number">12</span>; <span class="comment">// 3 floats * 4 bytes
-    </span><span class="kw">let </span>normal_size = model.mesh.vertices.len() * <span class="number">12</span>; <span class="comment">// 3 floats * 4 bytes
-    </span><span class="kw">let </span>index_size = count_indices(model) * <span class="number">2</span>; <span class="comment">// 1 unsigned short * 2 bytes
-
+    </span><span class="kw">let </span>normal_size = model.mesh.vertices.len() * <span class="number">12</span>;   <span class="comment">// 3 floats * 4 bytes
+    </span><span class="kw">let </span>index_size = count_indices(model) * <span class="number">2</span>;         <span class="comment">// 1 unsigned short * 2 bytes
+    
     </span><span class="kw">let </span>texcoord_size = <span class="kw">if </span>model.mesh.vertices.iter().any(|v| v.tex_coords.is_some()) {
-        model.mesh.vertices.len() * <span class="number">8 </span><span class="comment">// 2 floats * 4 bytes
+        model.mesh.vertices.len() * <span class="number">8  </span><span class="comment">// 2 floats * 4 bytes
     </span>} <span class="kw">else </span>{
         <span class="number">0
     </span>};
-
+    
     position_size + normal_size + index_size + texcoord_size
 }
 
 <span class="doccomment">/// Count total indices in the model.
 </span><span class="kw">fn </span>count_indices(model: <span class="kw-2">&amp;</span>Model) -&gt; usize {
     <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
-
+    
     <span class="kw">for </span>face <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.faces {
-        <span class="kw">match </span>face.indices.len().cmp(<span class="kw-2">&amp;</span><span class="number">3</span>) {
-            std::cmp::Ordering::Less =&gt; {
-                <span class="kw">continue</span>;
-            }
-            std::cmp::Ordering::Equal =&gt; {
-                count += <span class="number">3</span>;
-            }
-            std::cmp::Ordering::Greater =&gt; {
-                <span class="comment">// Triangulate the face
-                </span>count += (face.indices.len() - <span class="number">2</span>) * <span class="number">3</span>;
-            }
+        <span class="kw">if </span>face.indices.len() &lt; <span class="number">3 </span>{
+            <span class="kw">continue</span>;
+        } <span class="kw">else if </span>face.indices.len() == <span class="number">3 </span>{
+            count += <span class="number">3</span>;
+        } <span class="kw">else </span>{
+            <span class="comment">// Triangulate the face
+            </span>count += (face.indices.len() - <span class="number">2</span>) * <span class="number">3</span>;
         }
     }
-
+    
     count
 }
 
 <span class="doccomment">/// Find the minimum X coordinate in the model.
 </span><span class="kw">fn </span>calculate_min_x(model: <span class="kw-2">&amp;</span>Model) -&gt; f32 {
-    model
-        .mesh
-        .vertices
+    model.mesh.vertices
         .iter()
         .map(|v| v.position.x)
         .fold(f32::INFINITY, f32::min)
@@ -580,9 +562,7 @@
 
 <span class="doccomment">/// Find the minimum Y coordinate in the model.
 </span><span class="kw">fn </span>calculate_min_y(model: <span class="kw-2">&amp;</span>Model) -&gt; f32 {
-    model
-        .mesh
-        .vertices
+    model.mesh.vertices
         .iter()
         .map(|v| v.position.y)
         .fold(f32::INFINITY, f32::min)
@@ -590,9 +570,7 @@
 
 <span class="doccomment">/// Find the minimum Z coordinate in the model.
 </span><span class="kw">fn </span>calculate_min_z(model: <span class="kw-2">&amp;</span>Model) -&gt; f32 {
-    model
-        .mesh
-        .vertices
+    model.mesh.vertices
         .iter()
         .map(|v| v.position.z)
         .fold(f32::INFINITY, f32::min)
@@ -600,9 +578,7 @@
 
 <span class="doccomment">/// Find the maximum X coordinate in the model.
 </span><span class="kw">fn </span>calculate_max_x(model: <span class="kw-2">&amp;</span>Model) -&gt; f32 {
-    model
-        .mesh
-        .vertices
+    model.mesh.vertices
         .iter()
         .map(|v| v.position.x)
         .fold(f32::NEG_INFINITY, f32::max)
@@ -610,9 +586,7 @@
 
 <span class="doccomment">/// Find the maximum Y coordinate in the model.
 </span><span class="kw">fn </span>calculate_max_y(model: <span class="kw-2">&amp;</span>Model) -&gt; f32 {
-    model
-        .mesh
-        .vertices
+    model.mesh.vertices
         .iter()
         .map(|v| v.position.y)
         .fold(f32::NEG_INFINITY, f32::max)
@@ -620,9 +594,7 @@
 
 <span class="doccomment">/// Find the maximum Z coordinate in the model.
 </span><span class="kw">fn </span>calculate_max_z(model: <span class="kw-2">&amp;</span>Model) -&gt; f32 {
-    model
-        .mesh
-        .vertices
+    model.mesh.vertices
         .iter()
         .map(|v| v.position.z)
         .fold(f32::NEG_INFINITY, f32::max)
@@ -632,51 +604,47 @@
 </span><span class="kw">fn </span>export_binary_buffer&lt;P: AsRef&lt;Path&gt;&gt;(model: <span class="kw-2">&amp;</span>Model, path: P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>file = File::create(path)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>writer = BufWriter::new(file);
-
+    
     <span class="comment">// Write vertex positions
     </span><span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.vertices {
         writer.write_all(<span class="kw-2">&amp;</span>vertex.position.x.to_le_bytes())<span class="question-mark">?</span>;
         writer.write_all(<span class="kw-2">&amp;</span>vertex.position.y.to_le_bytes())<span class="question-mark">?</span>;
         writer.write_all(<span class="kw-2">&amp;</span>vertex.position.z.to_le_bytes())<span class="question-mark">?</span>;
     }
-
+    
     <span class="comment">// Write vertex normals
     </span><span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.vertices {
         writer.write_all(<span class="kw-2">&amp;</span>vertex.normal.x.to_le_bytes())<span class="question-mark">?</span>;
         writer.write_all(<span class="kw-2">&amp;</span>vertex.normal.y.to_le_bytes())<span class="question-mark">?</span>;
         writer.write_all(<span class="kw-2">&amp;</span>vertex.normal.z.to_le_bytes())<span class="question-mark">?</span>;
     }
-
+    
     <span class="comment">// Write indices
     </span><span class="kw">let </span><span class="kw-2">mut </span>indices = Vec::new();
-
+    
     <span class="kw">for </span>face <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.faces {
-        <span class="kw">match </span>face.indices.len().cmp(<span class="kw-2">&amp;</span><span class="number">3</span>) {
-            std::cmp::Ordering::Less =&gt; {
-                <span class="kw">continue</span>;
+        <span class="kw">if </span>face.indices.len() &lt; <span class="number">3 </span>{
+            <span class="kw">continue</span>;
+        } <span class="kw">else if </span>face.indices.len() == <span class="number">3 </span>{
+            <span class="comment">// Simple triangle
+            </span><span class="kw">for </span><span class="kw-2">&amp;</span>idx <span class="kw">in </span><span class="kw-2">&amp;</span>face.indices {
+                indices.push(idx <span class="kw">as </span>u16);
             }
-            std::cmp::Ordering::Equal =&gt; {
-                <span class="comment">// Simple triangle
-                </span><span class="kw">for </span><span class="kw-2">&amp;</span>idx <span class="kw">in </span><span class="kw-2">&amp;</span>face.indices {
-                    indices.push(idx <span class="kw">as </span>u16);
-                }
-            }
-            std::cmp::Ordering::Greater =&gt; {
-                <span class="comment">// Triangulate the face
-                </span><span class="kw">let </span>v0 = face.indices[<span class="number">0</span>];
-                <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..face.indices.len() - <span class="number">1 </span>{
-                    indices.push(v0 <span class="kw">as </span>u16);
-                    indices.push(face.indices[i] <span class="kw">as </span>u16);
-                    indices.push(face.indices[i + <span class="number">1</span>] <span class="kw">as </span>u16);
-                }
+        } <span class="kw">else </span>{
+            <span class="comment">// Triangulate the face
+            </span><span class="kw">let </span>v0 = face.indices[<span class="number">0</span>];
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..face.indices.len() - <span class="number">1 </span>{
+                indices.push(v0 <span class="kw">as </span>u16);
+                indices.push(face.indices[i] <span class="kw">as </span>u16);
+                indices.push(face.indices[i + <span class="number">1</span>] <span class="kw">as </span>u16);
             }
         }
     }
-
+    
     <span class="kw">for </span>idx <span class="kw">in </span>indices {
         writer.write_all(<span class="kw-2">&amp;</span>idx.to_le_bytes())<span class="question-mark">?</span>;
     }
-
+    
     <span class="comment">// Write texture coordinates if any
     </span><span class="kw">if </span>model.mesh.vertices.iter().any(|v| v.tex_coords.is_some()) {
         <span class="kw">for </span>vertex <span class="kw">in </span><span class="kw-2">&amp;</span>model.mesh.vertices {
@@ -685,7 +653,6 @@
             writer.write_all(<span class="kw-2">&amp;</span>v.to_le_bytes())<span class="question-mark">?</span>;
         }
     }
-
+    
     <span class="prelude-val">Ok</span>(())
-}
-</code></pre></div></section></main></body></html>
+} </code></pre></div></section></main></body></html>

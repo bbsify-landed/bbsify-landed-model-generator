@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["exporters","plugin","primitives","transforms","types"],"struct":["Model"],"trait":["Transform"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"fn":["create_cube","create_cylinder","create_sphere","export_model","main","parse_rotation","parse_vector3","print_usage"]};
