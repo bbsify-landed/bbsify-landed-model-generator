@@ -434,7 +434,12 @@
 <a href="#433" id="433">433</a>
 <a href="#434" id="434">434</a>
 <a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a></pre></div><pre class="rust"><code><span class="kw">use </span>std::env;
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a></pre></div><pre class="rust"><code><span class="kw">use </span>std::env;
 <span class="kw">use </span>std::fs::{<span class="self">self</span>, File};
 <span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
 <span class="kw">use </span>std::path::{Path, PathBuf};
@@ -555,6 +560,11 @@
         }
     }
 
+    <span class="comment">// If promote flag is set, also copy the index file to the examples directory
+    </span><span class="kw">if </span>promote {
+        <span class="kw">let </span>promoted_index_path = examples_dir.join(<span class="string">"index.md"</span>);
+        fs::copy(output_dir.join(<span class="string">"index.md"</span>), promoted_index_path)<span class="question-mark">?</span>;
+    }
     <span class="prelude-val">Ok</span>(())
 }
 
