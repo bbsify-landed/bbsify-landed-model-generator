@@ -13,8 +13,10 @@ categories = ["graphics", "rendering", "game-development"]
 
 [dependencies]
 # Core functionality
-nalgebra = "0.33.2"  # Linear algebra
-thiserror = "1.0.69" # Error handling
+nalgebra = "0.33.2"      # Linear algebra
+thiserror = "1.0.69"     # Error handling
+pulldown-cmark = "0.9.3" # Markdown parsing
+scraper = "0.18.1"       # HTML parsing
 
 # File format support
 obj-rs = "0.7.1"                                   # OBJ format
@@ -39,6 +41,11 @@ doctest = true # Enable doctests
 [[bin]]
 name = "model-generator"            # Command-line executable name
 path = "src/bin/model-generator.rs"
+
+# Documentation generator binary
+[[bin]]
+name = "doc-generator"            # Documentation generator executable
+path = "src/bin/doc-generator.rs"
 
 # Examples
 [[example]]

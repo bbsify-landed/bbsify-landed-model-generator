@@ -1,0 +1,66 @@
+name: Run Examples
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  test-examples:
+    name: Test Examples
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        rust: [stable]
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Create output directory
+        run: mkdir -p examples/output
+      
+      - name: Run basic_cube example
+        run: cargo run --example basic_cube
+
+      - name: Run complex_model example
+        run: cargo run --example complex_model
+
+      - name: Run all_transforms example
+        run: cargo run --example all_transforms
+
+      - name: Run basic_transforms example
+        run: cargo run --example basic_transforms
+
+      - name: Run advanced_transforms example
+        run: cargo run --example advanced_transforms
+
+      - name: Run deform_transforms example
+        run: cargo run --example deform_transforms
+
+      - name: Run projection_transforms example
+        run: cargo run --example projection_transforms 

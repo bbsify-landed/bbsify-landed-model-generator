@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         rust: [stable]
     steps:
     - uses: actions/checkout@v3
@@ -84,7 +84,7 @@ jobs:
     name: Build
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -104,12 +104,6 @@ jobs:
       with:
         name: model-generator-linux
         path: target/release/model-generator
-    - name: Upload artifact (Windows)
-      if: matrix.os == 'windows-latest'
-      uses: actions/upload-artifact@v4
-      with:
-        name: model-generator-windows
-        path: target/release/model-generator.exe
     - name: Upload artifact (macOS)
       if: matrix.os == 'macos-latest'
       uses: actions/upload-artifact@v4
