@@ -1,6 +1,6 @@
 # Example demonstrating advanced transforms: Matrix, Mirror, and Quaternion.
 
-[Back to Examples Index](../index.md)
+[Back to Examples Index](./index.md)
 
 ## Usage
 

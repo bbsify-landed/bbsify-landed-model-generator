@@ -1,6 +1,6 @@
 # Example demonstrating transforms from all categories working together.
 
-[Back to Examples Index](../index.md)
+[Back to Examples Index](./index.md)
 
 ## Usage
 

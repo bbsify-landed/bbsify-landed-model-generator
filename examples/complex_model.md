@@ -1,6 +1,6 @@
 # A complex example demonstrating the plugin system and combining multiple primitives.
 
-[Back to Examples Index](../index.md)
+[Back to Examples Index](./index.md)
 
 ## Usage
 

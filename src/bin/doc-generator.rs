@@ -85,7 +85,7 @@ fn generate_examples_markdown(
             let content = fs::read_to_string(&path)?;
             let title = extract_example_title(&content, &example_name);
 
-            writeln!(index_file, "- [{}](./examples/{}.md)", title, example_name)?;
+            writeln!(index_file, "- [{}](./{}.md)", title, example_name)?;
         }
     }
 
@@ -139,7 +139,7 @@ fn generate_markdown_content(path: &Path, content: &str, package_name: &str) -> 
 
     // Write header
     md_content.push_str(&format!("# {}\n\n", title));
-    md_content.push_str("[Back to Examples Index](../index.md)\n\n");
+    md_content.push_str("[Back to Examples Index](./index.md)\n\n");
 
     // Write description if available
     if !description.is_empty() {
