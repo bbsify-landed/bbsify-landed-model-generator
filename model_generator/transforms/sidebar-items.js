@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Matrix","Mirror","Rotate","Scale","Translate"]};
+window.SIDEBAR_ITEMS = {"mod":["advanced","basic","deform","projection"]};
