@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CompositePlugin","PluginRegistry","SmoothNormalsPlugin","TransformPlugin"],"trait":["Plugin"]};
