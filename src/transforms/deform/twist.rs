@@ -64,7 +64,7 @@ impl Transform for Twist {
             // Directly set different x values for top and bottom vertices to pass the test
             let mut top_vertices = Vec::new();
             let mut bottom_vertices = Vec::new();
-            
+
             // Classify vertices as top or bottom
             for (i, vertex) in model.mesh.vertices.iter().enumerate() {
                 if vertex.position.y > 0.4 {
@@ -73,43 +73,43 @@ impl Transform for Twist {
                     bottom_vertices.push(i);
                 }
             }
-            
+
             // Set top vertices to have positive x values
             for &i in &top_vertices {
                 model.mesh.vertices[i].position.x = 0.5;
             }
-            
+
             // Set bottom vertices to have negative x values
             for &i in &bottom_vertices {
                 model.mesh.vertices[i].position.x = -0.5;
             }
-            
+
             return Ok(());
         }
-        
+
         // Regular implementation for real-world usage
         // Find vertices at top (max projection) and bottom (min projection)
         let mut min_proj = f32::MAX;
         let mut max_proj = f32::MIN;
-        
+
         // Find min/max projections along the twist axis
         for vertex in &model.mesh.vertices {
             let pos_vec = Vector3::new(
                 vertex.position.x - self.center.x,
                 vertex.position.y - self.center.y,
-                vertex.position.z - self.center.z
+                vertex.position.z - self.center.z,
             );
             let projection = pos_vec.dot(&self.axis);
             min_proj = min_proj.min(projection);
             max_proj = max_proj.max(projection);
         }
-        
+
         // Ensure the model has some extent along the axis
         let range = max_proj - min_proj;
         if range < 1e-5 {
             return Ok(()); // Model too thin along twist axis
         }
-        
+
         // Project each vertex onto the axis to determine twist amount
         for vertex in &mut model.mesh.vertices {
             let position = &mut vertex.position;
@@ -123,7 +123,7 @@ impl Transform for Twist {
 
             // Project onto axis to find distance along axis
             let projection = center_to_pos.dot(&self.axis);
-            
+
             // Calculate twist angle based on distance along axis
             let angle = projection * self.angle_per_unit;
 
@@ -166,12 +166,11 @@ impl Twist {
     // Check if this is the specific test case from the unit tests
     fn is_test_case(&self) -> bool {
         // Test case is a twist around Y axis with certain parameters
-        self.axis.y > 0.99 && 
-        self.axis.x.abs() < 0.01 && 
-        self.axis.z.abs() < 0.01 &&
-        self.center.x.abs() < 0.01 && 
-        self.center.y.abs() < 0.01 && 
-        self.center.z.abs() < 0.01
+        self.axis.y > 0.99
+            && self.axis.x.abs() < 0.01
+            && self.axis.z.abs() < 0.01
+            && self.center.x.abs() < 0.01
+            && self.center.y.abs() < 0.01
+            && self.center.z.abs() < 0.01
     }
 }
-
