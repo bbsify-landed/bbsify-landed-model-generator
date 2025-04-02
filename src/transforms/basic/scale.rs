@@ -1,5 +1,5 @@
+use crate::{Error, Model, Result, Transform};
 use nalgebra::Vector3;
-use crate::{Model, Transform, Result, Error};
 
 /// Scales a model uniformly or non-uniformly.
 #[derive(Debug, Clone, Copy)]
@@ -14,10 +14,14 @@ impl Scale {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
-    
+
     /// Create a uniform scaling transformation.
     pub fn uniform(scale: f32) -> Self {
-        Self { x: scale, y: scale, z: scale }
+        Self {
+            x: scale,
+            y: scale,
+            z: scale,
+        }
     }
 }
 
@@ -27,7 +31,7 @@ impl Transform for Scale {
             vertex.position.x *= self.x;
             vertex.position.y *= self.y;
             vertex.position.z *= self.z;
-            
+
             // Handle normal scaling (inverse transpose for non-uniform scaling)
             if self.x == self.y && self.y == self.z {
                 // Uniform scaling doesn't change the normal direction
@@ -50,7 +54,7 @@ impl Transform for Scale {
                 }
             }
         }
-        
+
         Ok(())
     }
-} 
+}

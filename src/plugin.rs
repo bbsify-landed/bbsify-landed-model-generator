@@ -7,10 +7,10 @@ use std::sync::Arc;
 pub trait Plugin: Send + Sync {
     /// Name of the plugin.
     fn name(&self) -> &str;
-    
+
     /// Description of the plugin.
     fn description(&self) -> &str;
-    
+
     /// Process a model using this plugin.
     fn process(&self, model: &mut Model) -> Result<()>;
 }
@@ -28,20 +28,17 @@ impl PluginRegistry {
             plugins: Vec::new(),
         }
     }
-    
+
     /// Register a plugin with the registry.
     pub fn register<P: Plugin + 'static>(&mut self, plugin: P) {
         self.plugins.push(Arc::new(plugin));
     }
-    
+
     /// Get a plugin by name.
     pub fn get(&self, name: &str) -> Option<Arc<dyn Plugin>> {
-        self.plugins
-            .iter()
-            .find(|p| p.name() == name)
-            .cloned()
+        self.plugins.iter().find(|p| p.name() == name).cloned()
     }
-    
+
     /// List all registered plugins.
     pub fn list(&self) -> Vec<(&str, &str)> {
         self.plugins
@@ -73,11 +70,11 @@ impl<T: Transform + Send + Sync> Plugin for TransformPlugin<T> {
     fn name(&self) -> &str {
         &self.name
     }
-    
+
     fn description(&self) -> &str {
         &self.description
     }
-    
+
     fn process(&self, model: &mut Model) -> Result<()> {
         self.transform.apply(model)
     }
@@ -99,13 +96,13 @@ impl CompositePlugin {
             plugins: Vec::new(),
         }
     }
-    
+
     /// Add a plugin to the sequence.
     pub fn add<P: Plugin + 'static>(&mut self, plugin: P) -> &mut Self {
         self.plugins.push(Arc::new(plugin));
         self
     }
-    
+
     /// Add an existing plugin to the sequence.
     pub fn add_existing(&mut self, plugin: Arc<dyn Plugin>) -> &mut Self {
         self.plugins.push(plugin);
@@ -117,16 +114,16 @@ impl Plugin for CompositePlugin {
     fn name(&self) -> &str {
         &self.name
     }
-    
+
     fn description(&self) -> &str {
         &self.description
     }
-    
+
     fn process(&self, model: &mut Model) -> Result<()> {
         for plugin in &self.plugins {
             plugin.process(model)?;
         }
-        
+
         Ok(())
     }
 }
@@ -151,11 +148,11 @@ impl Plugin for SmoothNormalsPlugin {
     fn name(&self) -> &str {
         &self.name
     }
-    
+
     fn description(&self) -> &str {
         &self.description
     }
-    
+
     fn process(&self, model: &mut Model) -> Result<()> {
         model.mesh.compute_normals();
         Ok(())
@@ -166,4 +163,4 @@ impl Default for SmoothNormalsPlugin {
     fn default() -> Self {
         Self::new()
     }
-} 
+}

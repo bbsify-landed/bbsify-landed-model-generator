@@ -97,7 +97,7 @@ impl Mesh {
     }
 
     /// Add a vertex to the mesh.
-    /// 
+    ///
     /// Returns the index of the added vertex.
     pub fn add_vertex(&mut self, vertex: Vertex) -> usize {
         let index = self.vertices.len();
@@ -106,7 +106,7 @@ impl Mesh {
     }
 
     /// Add a face to the mesh.
-    /// 
+    ///
     /// Returns the index of the added face.
     pub fn add_face(&mut self, face: Face, material_name: Option<String>) -> usize {
         let index = self.faces.len();
@@ -204,4 +204,4 @@ pub enum TextureType {
     Emission,
     /// Occlusion map
     Occlusion,
-} 
+}

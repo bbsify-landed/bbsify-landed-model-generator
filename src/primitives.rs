@@ -44,117 +44,113 @@ impl Cube {
         let mut model = Model::new("Cube");
         let half = self.size / 2.0;
         let (cx, cy, cz) = self.center;
-        
+
         // Create vertices (8 corners of the cube)
-        let positions = [
-            // Front face - 0,1,2,3
-            (cx - half, cy - half, cz + half),
-            (cx + half, cy - half, cz + half),
-            (cx + half, cy + half, cz + half),
-            (cx - half, cy + half, cz + half),
-            
-            // Back face - 4,5,6,7
-            (cx - half, cy - half, cz - half),
-            (cx - half, cy + half, cz - half),
-            (cx + half, cy + half, cz - half),
-            (cx + half, cy - half, cz - half),
-        ];
-        
-        // Define normals for each face
-        let normals = [
-            Vector3::new(0.0, 0.0, 1.0),   // Front
-            Vector3::new(0.0, 0.0, -1.0),  // Back
-            Vector3::new(0.0, 1.0, 0.0),   // Top
-            Vector3::new(0.0, -1.0, 0.0),  // Bottom
-            Vector3::new(1.0, 0.0, 0.0),   // Right
-            Vector3::new(-1.0, 0.0, 0.0),  // Left
-        ];
-        
-        // UVs for each vertex on each face
-        let uvs = [
-            (0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)
-        ];
-        
-        // Create all the vertices with proper normals for each face
-        // Front face (z+)
-        let front_indices = [0, 1, 2, 3].map(|i| {
-            model.mesh.add_vertex(Vertex::new(
-                Point3::new(positions[i].0, positions[i].1, positions[i].2),
-                normals[0],
-                if self.with_uvs { Some(uvs[i]) } else { None },
-            ))
-        });
-        
-        // Back face (z-)
-        let back_indices = [4, 5, 6, 7].map(|i| {
-            model.mesh.add_vertex(Vertex::new(
-                Point3::new(positions[i].0, positions[i].1, positions[i].2),
-                normals[1],
-                if self.with_uvs { Some(uvs[(i + 2) % 4]) } else { None },
-            ))
-        });
-        
-        // Top face (y+)
-        let top_indices = [3, 2, 6, 5].map(|i| {
-            model.mesh.add_vertex(Vertex::new(
-                Point3::new(positions[i].0, positions[i].1, positions[i].2),
-                normals[2],
-                if self.with_uvs { Some(uvs[i % 4]) } else { None },
-            ))
-        });
-        
-        // Bottom face (y-)
-        let bottom_indices = [0, 4, 7, 1].map(|i| {
-            model.mesh.add_vertex(Vertex::new(
-                Point3::new(positions[i].0, positions[i].1, positions[i].2),
-                normals[3],
-                if self.with_uvs { Some(uvs[i % 4]) } else { None },
-            ))
-        });
-        
-        // Right face (x+)
-        let right_indices = [1, 7, 6, 2].map(|i| {
-            model.mesh.add_vertex(Vertex::new(
-                Point3::new(positions[i].0, positions[i].1, positions[i].2),
-                normals[4],
-                if self.with_uvs { Some(uvs[i % 4]) } else { None },
-            ))
-        });
-        
-        // Left face (x-)
-        let left_indices = [0, 3, 5, 4].map(|i| {
-            model.mesh.add_vertex(Vertex::new(
-                Point3::new(positions[i].0, positions[i].1, positions[i].2),
-                normals[5],
-                if self.with_uvs { Some(uvs[i % 4]) } else { None },
-            ))
-        });
-        
+        let v0 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx - half, cy - half, cz + half),
+            Vector3::new(0.0, 0.0, 0.0), // Normals will be computed later
+            if self.with_uvs {
+                Some((0.0, 0.0))
+            } else {
+                None
+            },
+        ));
+
+        let v1 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx + half, cy - half, cz + half),
+            Vector3::new(0.0, 0.0, 0.0),
+            if self.with_uvs {
+                Some((1.0, 0.0))
+            } else {
+                None
+            },
+        ));
+
+        let v2 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx + half, cy + half, cz + half),
+            Vector3::new(0.0, 0.0, 0.0),
+            if self.with_uvs {
+                Some((1.0, 1.0))
+            } else {
+                None
+            },
+        ));
+
+        let v3 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx - half, cy + half, cz + half),
+            Vector3::new(0.0, 0.0, 0.0),
+            if self.with_uvs {
+                Some((0.0, 1.0))
+            } else {
+                None
+            },
+        ));
+
+        let v4 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx - half, cy - half, cz - half),
+            Vector3::new(0.0, 0.0, 0.0),
+            if self.with_uvs {
+                Some((0.0, 0.0))
+            } else {
+                None
+            },
+        ));
+
+        let v5 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx - half, cy + half, cz - half),
+            Vector3::new(0.0, 0.0, 0.0),
+            if self.with_uvs {
+                Some((0.0, 1.0))
+            } else {
+                None
+            },
+        ));
+
+        let v6 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx + half, cy + half, cz - half),
+            Vector3::new(0.0, 0.0, 0.0),
+            if self.with_uvs {
+                Some((1.0, 1.0))
+            } else {
+                None
+            },
+        ));
+
+        let v7 = model.mesh.add_vertex(Vertex::new(
+            Point3::new(cx + half, cy - half, cz - half),
+            Vector3::new(0.0, 0.0, 0.0),
+            if self.with_uvs {
+                Some((1.0, 0.0))
+            } else {
+                None
+            },
+        ));
+
         // Define faces (6 faces of the cube, each as 2 triangles)
-        // Front face
-        model.mesh.add_face(Face::triangle(front_indices[0], front_indices[1], front_indices[2]), None);
-        model.mesh.add_face(Face::triangle(front_indices[0], front_indices[2], front_indices[3]), None);
-        
-        // Back face
-        model.mesh.add_face(Face::triangle(back_indices[0], back_indices[1], back_indices[2]), None);
-        model.mesh.add_face(Face::triangle(back_indices[0], back_indices[2], back_indices[3]), None);
-        
-        // Top face
-        model.mesh.add_face(Face::triangle(top_indices[0], top_indices[1], top_indices[2]), None);
-        model.mesh.add_face(Face::triangle(top_indices[0], top_indices[2], top_indices[3]), None);
-        
-        // Bottom face
-        model.mesh.add_face(Face::triangle(bottom_indices[0], bottom_indices[1], bottom_indices[2]), None);
-        model.mesh.add_face(Face::triangle(bottom_indices[0], bottom_indices[2], bottom_indices[3]), None);
-        
-        // Right face
-        model.mesh.add_face(Face::triangle(right_indices[0], right_indices[1], right_indices[2]), None);
-        model.mesh.add_face(Face::triangle(right_indices[0], right_indices[2], right_indices[3]), None);
-        
-        // Left face
-        model.mesh.add_face(Face::triangle(left_indices[0], left_indices[1], left_indices[2]), None);
-        model.mesh.add_face(Face::triangle(left_indices[0], left_indices[2], left_indices[3]), None);
-        
+        // Front face (z+)
+        model.mesh.add_face(Face::triangle(v0, v1, v2), None);
+        model.mesh.add_face(Face::triangle(v0, v2, v3), None);
+
+        // Back face (z-)
+        model.mesh.add_face(Face::triangle(v4, v5, v6), None);
+        model.mesh.add_face(Face::triangle(v4, v6, v7), None);
+
+        // Top face (y+)
+        model.mesh.add_face(Face::triangle(v3, v2, v6), None);
+        model.mesh.add_face(Face::triangle(v3, v6, v5), None);
+
+        // Bottom face (y-)
+        model.mesh.add_face(Face::triangle(v0, v4, v7), None);
+        model.mesh.add_face(Face::triangle(v0, v7, v1), None);
+
+        // Right face (x+)
+        model.mesh.add_face(Face::triangle(v1, v7, v6), None);
+        model.mesh.add_face(Face::triangle(v1, v6, v2), None);
+
+        // Left face (x-)
+        model.mesh.add_face(Face::triangle(v0, v3, v5), None);
+        model.mesh.add_face(Face::triangle(v0, v5, v4), None);
+
         model
     }
 }
@@ -215,62 +211,62 @@ impl Sphere {
     pub fn build(self) -> Model {
         let mut model = Model::new("Sphere");
         let (cx, cy, cz) = self.center;
-        
+
         // Add top vertex
         let top_idx = model.mesh.add_vertex(Vertex::new(
             Point3::new(cx, cy + self.radius, cz),
             Vector3::new(0.0, 1.0, 0.0),
             Some((0.5, 1.0)),
         ));
-        
+
         // Add bottom vertex
         let bottom_idx = model.mesh.add_vertex(Vertex::new(
             Point3::new(cx, cy - self.radius, cz),
             Vector3::new(0.0, -1.0, 0.0),
             Some((0.5, 0.0)),
         ));
-        
+
         // Generate vertices for rings
         let mut ring_indices = Vec::new();
         for i in 0..self.rings - 1 {
             let phi = std::f32::consts::PI * (i as f32 + 1.0) / self.rings as f32;
             let cos_phi = phi.cos();
             let sin_phi = phi.sin();
-            
+
             let y = cy + self.radius * cos_phi;
             let ring_radius = self.radius * sin_phi;
-            
+
             let mut ring = Vec::new();
             for j in 0..self.segments {
                 let theta = 2.0 * std::f32::consts::PI * j as f32 / self.segments as f32;
                 let cos_theta = theta.cos();
                 let sin_theta = theta.sin();
-                
+
                 let x = cx + ring_radius * cos_theta;
                 let z = cz + ring_radius * sin_theta;
-                
+
                 // Properly calculate normalized normal vector
                 // For a sphere, the normal is simply the normalized direction from center to point
                 let nx = sin_phi * cos_theta;
                 let ny = cos_phi;
                 let nz = sin_phi * sin_theta;
-                
+
                 // Better UV mapping with proper wrapping
                 let u = j as f32 / self.segments as f32;
                 let v = 1.0 - (i as f32 + 1.0) / self.rings as f32;
-                
+
                 let idx = model.mesh.add_vertex(Vertex::new(
                     Point3::new(x, y, z),
                     Vector3::new(nx, ny, nz),
                     Some((u, v)),
                 ));
-                
+
                 ring.push(idx);
             }
-            
+
             ring_indices.push(ring);
         }
-        
+
         // Create faces for the top cap
         let first_ring = &ring_indices[0];
         for i in 0..self.segments {
@@ -280,26 +276,24 @@ impl Sphere {
                 None,
             );
         }
-        
+
         // Create faces for the middle rings
         for i in 0..self.rings - 2 {
             let ring1 = &ring_indices[i];
             let ring2 = &ring_indices[i + 1];
-            
+
             for j in 0..self.segments {
                 let next_j = (j + 1) % self.segments;
-                
-                model.mesh.add_face(
-                    Face::triangle(ring1[j], ring2[j], ring1[next_j]),
-                    None,
-                );
-                model.mesh.add_face(
-                    Face::triangle(ring1[next_j], ring2[j], ring2[next_j]),
-                    None,
-                );
+
+                model
+                    .mesh
+                    .add_face(Face::triangle(ring1[j], ring2[j], ring1[next_j]), None);
+                model
+                    .mesh
+                    .add_face(Face::triangle(ring1[next_j], ring2[j], ring2[next_j]), None);
             }
         }
-        
+
         // Create faces for the bottom cap
         let last_ring = &ring_indices[self.rings - 2];
         for i in 0..self.segments {
@@ -309,7 +303,7 @@ impl Sphere {
                 None,
             );
         }
-        
+
         model
     }
 }
@@ -451,46 +445,11 @@ impl Cylinder {
                 Some((0.5, 0.5)),
             ));
 
-            // Create vertices for cap UVs
-            let mut top_cap_indices = Vec::new();
-            let mut bottom_cap_indices = Vec::new();
-
-            // Create specific vertices for caps with proper UV mapping
-            for i in 0..self.segments {
-                let theta = 2.0 * std::f32::consts::PI * i as f32 / self.segments as f32;
-                let cos_theta = theta.cos();
-                let sin_theta = theta.sin();
-
-                let x = self.radius * cos_theta;
-                let z = self.radius * sin_theta;
-
-                // Calculate UV coordinates for caps (circular mapping)
-                let u = 0.5 + 0.5 * cos_theta;
-                let v = 0.5 + 0.5 * sin_theta;
-
-                // Top cap vertex with proper normal and UV
-                let top_cap_idx = model.mesh.add_vertex(Vertex::new(
-                    Point3::new(cx + x, cy + half_height, cz + z),
-                    Vector3::new(0.0, 1.0, 0.0),
-                    Some((u, v)),
-                ));
-
-                // Bottom cap vertex with proper normal and UV
-                let bottom_cap_idx = model.mesh.add_vertex(Vertex::new(
-                    Point3::new(cx + x, cy - half_height, cz + z),
-                    Vector3::new(0.0, -1.0, 0.0),
-                    Some((u, 1.0 - v)),
-                ));
-
-                top_cap_indices.push(top_cap_idx);
-                bottom_cap_indices.push(bottom_cap_idx);
-            }
-
             // Create top cap faces
             for i in 0..self.segments {
                 let next_i = (i + 1) % self.segments;
                 model.mesh.add_face(
-                    Face::triangle(top_center, top_cap_indices[i], top_cap_indices[next_i]),
+                    Face::triangle(top_center, top_indices[i], top_indices[next_i]),
                     None,
                 );
             }
@@ -499,11 +458,7 @@ impl Cylinder {
             for i in 0..self.segments {
                 let next_i = (i + 1) % self.segments;
                 model.mesh.add_face(
-                    Face::triangle(
-                        bottom_center,
-                        bottom_cap_indices[next_i],
-                        bottom_cap_indices[i],
-                    ),
+                    Face::triangle(bottom_center, bottom_indices[next_i], bottom_indices[i]),
                     None,
                 );
             }

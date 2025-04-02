@@ -1,7 +1,6 @@
 //! Example demonstrating deform transforms: Twist, Bend, and Taper.
 
 use model_generator::primitives::{Cube, Cylinder};
-use model_generator::transforms::basic::Translate;
 use model_generator::transforms::deform::{Bend, Taper, Twist};
 use nalgebra::Vector3;
 

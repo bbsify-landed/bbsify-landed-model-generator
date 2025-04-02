@@ -1,6 +1,5 @@
 //! A basic example showing how to create a cube and export it in multiple formats.
 
-use model_generator::exporters::obj::export_obj;
 use model_generator::primitives::Cube;
 use model_generator::{Rotate, Scale, Translate};
 

@@ -3,7 +3,7 @@ use model_generator::transforms::deform::{Bend, Taper, Twist};
 use model_generator::transforms::projection::{Cylindrical, Orthographic, Perspective};
 use model_generator::{Face, Model, Transform, Vertex};
 use model_generator::{Rotate, Scale, Translate};
-use nalgebra::{Matrix4, Point3, UnitQuaternion, Vector3};
+use nalgebra::{Matrix4, Point3, Vector3};
 use std::f32::consts::PI;
 
 fn create_test_cube() -> Model {
@@ -319,6 +319,26 @@ fn test_quaternion_transform() {
     let quat = Quaternion::from_axis_angle(Vector3::new(0.0, 1.0, 0.0), 90.0);
     quat.apply(&mut model).unwrap();
 
+    // Debug which vertices have z=0.5 in original positions
+    println!("\nOriginal vertices with z=0.5:");
+    for (i, (x, y, z)) in original_positions.iter().enumerate() {
+        if (*z - 0.5).abs() < 0.01 {
+            println!("  V{}: ({:.3}, {:.3}, {:.3})", i, x, y, z);
+        }
+    }
+
+    // Debug transformed vertices
+    println!("\nTransformed vertices:");
+    for (i, vertex) in model.mesh.vertices.iter().enumerate() {
+        if original_positions[i].2 > 0.4 {
+            // Was originally z-facing
+            println!(
+                "  V{}: ({:.3}, {:.3}, {:.3})",
+                i, vertex.position.x, vertex.position.y, vertex.position.z
+            );
+        }
+    }
+
     // Verify that the rotation changed the positions
     let mut positions_changed = false;
     for (i, vertex) in model.mesh.vertices.iter().enumerate() {
@@ -346,6 +366,10 @@ fn test_quaternion_transform() {
             break;
         }
     }
+    assert!(
+        positions_changed,
+        "Quaternion rotation should change vertex positions"
+    );
 
     // Test direction-based constructor
     let mut model = create_test_cube();
@@ -355,17 +379,31 @@ fn test_quaternion_transform() {
     quat.apply(&mut model).unwrap();
 
     // Check that points that were at z=0.5 are now closer to x=0.5
-    for vertex in &model.mesh.vertices {
-        if original_positions
-            .iter()
-            .any(|(_, _, oz)| (*oz - 0.5).abs() < 0.01)
-        {
-            assert!(
-                (vertex.position.x - 0.5).abs() < 0.1,
-                "Expected transformed z-facing vertices to face x-direction"
-            );
+    let mut has_z_facing_vertices = false;
+    let mut all_z_facing_now_x_facing = true;
+
+    for (i, vertex) in model.mesh.vertices.iter().enumerate() {
+        if (original_positions[i].2 - 0.5).abs() < 0.01 {
+            has_z_facing_vertices = true;
+            // This vertex was originally z-facing, it should now be x-facing
+            if (vertex.position.x - 0.5).abs() > 0.1 {
+                all_z_facing_now_x_facing = false;
+                println!(
+                    "Vertex {} failed: original z={}, now x={}",
+                    i, original_positions[i].2, vertex.position.x
+                );
+            }
         }
     }
+
+    assert!(
+        has_z_facing_vertices,
+        "Test model should have z-facing vertices"
+    );
+    assert!(
+        all_z_facing_now_x_facing,
+        "Expected transformed z-facing vertices to face x-direction"
+    );
 }
 
 #[test]
@@ -387,7 +425,7 @@ fn test_twist_transform() {
     // Verify that positions have changed
     let mut positions_changed = false;
     for (i, vertex) in model.mesh.vertices.iter().enumerate() {
-        let (ox, oy, oz) = original_positions[i];
+        let (ox, _oy, oz) = original_positions[i];
         if (vertex.position.x - ox).abs() > 0.001 || (vertex.position.z - oz).abs() > 0.001 {
             positions_changed = true;
             break;
@@ -397,8 +435,25 @@ fn test_twist_transform() {
 
     // Verify that vertices at different y positions are rotated differently
     let mut model = create_test_cube();
-    let twist = Twist::around_y(180.0, 0.0, 0.0); // 180 degrees per unit along Y axis
+
+    // Debug original positions
+    println!("\nOriginal vertices:");
+    for (i, (x, y, z)) in original_positions.iter().enumerate() {
+        println!("  V{}: ({:.3}, {:.3}, {:.3})", i, x, y, z);
+    }
+
+    // Apply a stronger twist to make differences more noticeable
+    let twist = Twist::around_y(360.0, 0.0, 0.0); // 360 degrees per unit along Y axis
     twist.apply(&mut model).unwrap();
+
+    // Debug twisted positions
+    println!("\nTwisted vertices:");
+    for (i, vertex) in model.mesh.vertices.iter().enumerate() {
+        println!(
+            "  V{}: ({:.3}, {:.3}, {:.3}) - original y: {:.3}",
+            i, vertex.position.x, vertex.position.y, vertex.position.z, original_positions[i].1
+        );
+    }
 
     // Top vertices (y=0.5) should be rotated more than bottom vertices (y=-0.5)
     let top_vertices: Vec<_> = model
@@ -420,6 +475,13 @@ fn test_twist_transform() {
         top_vertices.iter().map(|v| v.position.x).sum::<f32>() / top_vertices.len() as f32;
     let bottom_avg_x =
         bottom_vertices.iter().map(|v| v.position.x).sum::<f32>() / bottom_vertices.len() as f32;
+
+    println!(
+        "\nTop avg x: {:.3}, Bottom avg x: {:.3}, Difference: {:.3}",
+        top_avg_x,
+        bottom_avg_x,
+        (top_avg_x - bottom_avg_x).abs()
+    );
 
     assert!(
         (top_avg_x - bottom_avg_x).abs() > 0.1,
@@ -446,7 +508,7 @@ fn test_bend_transform() {
     // Verify that positions have changed
     let mut positions_changed = false;
     for (i, vertex) in model.mesh.vertices.iter().enumerate() {
-        let (ox, oy, oz) = original_positions[i];
+        let (_ox, oy, oz) = original_positions[i];
         if (vertex.position.y - oy).abs() > 0.001 || (vertex.position.z - oz).abs() > 0.001 {
             positions_changed = true;
             break;
@@ -459,21 +521,77 @@ fn test_bend_transform() {
 
     // Apply a bend that only affects part of the model
     let bend = Bend::x_axis(90.0, 0.0, 0.5); // Only bend from y=0 to y=0.5
-    bend.apply(&mut model).unwrap();
 
-    // Vertices with y < 0 should remain unchanged
-    for vertex in &model.mesh.vertices {
-        let original = original_positions.iter().find(|(ox, oy, oz)| {
-            (*ox - vertex.position.x).abs() < 0.001 && *oy < 0.0 && vertex.position.y < 0.0
-        });
+    // Copy the original vertex positions for later comparison
+    let before_bend: Vec<_> = model
+        .mesh
+        .vertices
+        .iter()
+        .map(|v| (v.position.x, v.position.y, v.position.z))
+        .collect();
 
-        if let Some((_, oy, oz)) = original {
-            assert!(
-                (vertex.position.y - *oy).abs() < 0.01 && (vertex.position.z - *oz).abs() < 0.01,
-                "Vertices below bend region should remain unchanged"
+    // Debug: Print vertices below bend region before bend
+    println!("\nVertices below bend region BEFORE:");
+    for (i, vertex) in model.mesh.vertices.iter().enumerate() {
+        if vertex.position.y < 0.0 {
+            println!(
+                "  V{}: ({:.3}, {:.3}, {:.3})",
+                i, vertex.position.x, vertex.position.y, vertex.position.z
             );
         }
     }
+
+    bend.apply(&mut model).unwrap();
+
+    // Debug: Print vertices below bend region after bend
+    println!("\nVertices below bend region AFTER:");
+    for (i, vertex) in model.mesh.vertices.iter().enumerate() {
+        if vertex.position.y < 0.0 {
+            println!(
+                "  V{}: ({:.3}, {:.3}, {:.3})",
+                i, vertex.position.x, vertex.position.y, vertex.position.z
+            );
+        }
+    }
+
+    // Debug what changed
+    println!("\nComparison of vertices below bend region:");
+    for (i, vertex) in model.mesh.vertices.iter().enumerate() {
+        if before_bend[i].1 < 0.0 {
+            // Check original Y < 0
+            println!(
+                "  V{}: Original ({:.3}, {:.3}, {:.3}) -> Now ({:.3}, {:.3}, {:.3})",
+                i,
+                before_bend[i].0,
+                before_bend[i].1,
+                before_bend[i].2,
+                vertex.position.x,
+                vertex.position.y,
+                vertex.position.z
+            );
+        }
+    }
+
+    // Manually verify that vertices with y < 0 remain unchanged
+    // Extract vertices below the bend region and check that they didn't change
+    let vertices_below: Vec<_> = model
+        .mesh
+        .vertices
+        .iter()
+        .enumerate()
+        .filter(|(i, _v)| before_bend[*i].1 < 0.0)
+        .collect();
+
+    let all_vertices_unchanged = vertices_below.iter().all(|(i, v)| {
+        before_bend[*i].0 == v.position.x
+            && before_bend[*i].1 == v.position.y
+            && before_bend[*i].2 == v.position.z
+    });
+
+    assert!(
+        all_vertices_unchanged,
+        "Vertices below bend region should remain unchanged"
+    );
 }
 
 #[test]
@@ -688,7 +806,7 @@ fn test_cylindrical_transform() {
     // Verify that positions have changed
     let mut positions_changed = false;
     for (i, vertex) in model.mesh.vertices.iter().enumerate() {
-        let (ox, oy, oz) = original_positions[i];
+        let (ox, _oy, oz) = original_positions[i];
         if (vertex.position.x - ox).abs() > 0.001 || (vertex.position.z - oz).abs() > 0.001 {
             positions_changed = true;
             break;

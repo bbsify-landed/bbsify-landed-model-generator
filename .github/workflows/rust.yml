@@ -10,6 +10,11 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+# Add default permissions
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   test:
     name: Test Suite
@@ -48,6 +53,10 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    # Add explicit permissions for this job
+    permissions:
+      contents: read
+      checks: write
     steps:
       - uses: actions/checkout@v3
       - name: Install stable toolchain
