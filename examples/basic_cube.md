@@ -1,6 +1,6 @@
 # A basic example showing how to create a cube and export it in multiple formats.
 
-[Back to Examples Index](./index.md)
+[Back to Examples Index](./README.md)
 
 ## Usage
 

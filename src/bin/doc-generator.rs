@@ -55,7 +55,7 @@ fn generate_examples_markdown(
     promote: bool,
 ) -> io::Result<()> {
     // Create index file for all examples
-    let mut index_file = File::create(output_dir.join("index.md"))?;
+    let mut index_file = File::create(output_dir.join("README.md"))?;
 
     writeln!(index_file, "# {} Examples", package_name)?;
     writeln!(
@@ -139,7 +139,7 @@ fn generate_markdown_content(path: &Path, content: &str, package_name: &str) -> 
 
     // Write header
     md_content.push_str(&format!("# {}\n\n", title));
-    md_content.push_str("[Back to Examples Index](./index.md)\n\n");
+    md_content.push_str("[Back to Examples Index](./README.md)\n\n");
 
     // Write description if available
     if !description.is_empty() {
