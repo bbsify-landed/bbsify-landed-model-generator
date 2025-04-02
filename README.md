@@ -39,6 +39,34 @@ fn main() {
 }
 ```
 
+## Documentation
+
+The library includes both standard Rust documentation and a single-page documentation generator.
+
+### Standard Documentation
+
+Generate the standard Rust documentation using:
+
+```bash
+cargo doc --open
+```
+
+### Single-Page Documentation
+
+Generate a comprehensive single-page HTML documentation using:
+
+```bash
+cargo run --bin doc-generator
+```
+
+This will create a single HTML file at `target/single-page-docs/index.html` that includes:
+- All module documentation
+- API references
+- Examples with source code
+- README content
+
+This is useful for offline reference or for getting a complete overview of the entire project on a single page.
+
 ## Plugin System
 
 Create custom transformations by implementing the `Transform` trait:
@@ -98,6 +126,9 @@ cargo test
 
 # Generate documentation
 cargo doc --open
+
+# Generate single-page documentation
+cargo run --bin doc-generator
 
 # Check code for errors without building
 cargo check
@@ -159,4 +190,4 @@ This project uses GitHub Actions for continuous integration and deployment:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
