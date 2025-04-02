@@ -496,7 +496,7 @@
     promote: bool,
 ) -&gt; io::Result&lt;()&gt; {
     <span class="comment">// Create index file for all examples
-    </span><span class="kw">let </span><span class="kw-2">mut </span>index_file = File::create(output_dir.join(<span class="string">"index.md"</span>))<span class="question-mark">?</span>;
+    </span><span class="kw">let </span><span class="kw-2">mut </span>index_file = File::create(output_dir.join(<span class="string">"README.md"</span>))<span class="question-mark">?</span>;
 
     <span class="macro">writeln!</span>(index_file, <span class="string">"# {} Examples"</span>, package_name)<span class="question-mark">?</span>;
     <span class="macro">writeln!</span>(
@@ -580,7 +580,7 @@
 
     <span class="comment">// Write header
     </span>md_content.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"# {}\n\n"</span>, title));
-    md_content.push_str(<span class="string">"[Back to Examples Index](./index.md)\n\n"</span>);
+    md_content.push_str(<span class="string">"[Back to Examples Index](./README.md)\n\n"</span>);
 
     <span class="comment">// Write description if available
     </span><span class="kw">if </span>!description.is_empty() {
