@@ -1,0 +1,1 @@
+searchState.loadedDescShard("doc_generator", 0, "Extracts usage information from example code as markdown\nA markdown documentation generator for examples in the …")

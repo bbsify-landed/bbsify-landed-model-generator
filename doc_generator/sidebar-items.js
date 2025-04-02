@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["extract_example_description","extract_example_title","extract_example_usage","extract_package_name","extract_toml_value","generate_examples_markdown","generate_markdown_content","main"]};

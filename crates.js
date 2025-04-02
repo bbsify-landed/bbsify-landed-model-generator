@@ -1,2 +1,2 @@
-window.ALL_CRATES = ["model_generator"];
-//{"start":21,"fragment_lengths":[17]}
+window.ALL_CRATES = ["doc_generator","model_generator"];
+//{"start":21,"fragment_lengths":[15,18]}
