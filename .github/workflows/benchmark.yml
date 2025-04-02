@@ -1,0 +1,48 @@
+name: Benchmarks
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmark:
+    name: Run benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Create output directory
+        run: mkdir -p benches/output
+      - name: Run benchmarks
+        run: cargo bench --workspace
+      - name: Store benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: target/criterion/**
+      - name: Prepare benchmark directory for cache
+        run: |
+          mkdir -p benchmark-history
+          cp -r target/criterion/* benchmark-history/ || true
+      - name: Cache benchmark results
+        uses: actions/cache@v3
+        with:
+          path: benchmark-history
+          key: ${{ runner.os }}-benchmark-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-benchmark- 
