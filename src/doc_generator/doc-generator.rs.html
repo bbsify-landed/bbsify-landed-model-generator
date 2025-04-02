@@ -526,7 +526,7 @@
             </span><span class="kw">let </span>content = fs::read_to_string(<span class="kw-2">&amp;</span>path)<span class="question-mark">?</span>;
             <span class="kw">let </span>title = extract_example_title(<span class="kw-2">&amp;</span>content, <span class="kw-2">&amp;</span>example_name);
 
-            <span class="macro">writeln!</span>(index_file, <span class="string">"- [{}](./examples/{}.md)"</span>, title, example_name)<span class="question-mark">?</span>;
+            <span class="macro">writeln!</span>(index_file, <span class="string">"- [{}](./{}.md)"</span>, title, example_name)<span class="question-mark">?</span>;
         }
     }
 
@@ -580,7 +580,7 @@
 
     <span class="comment">// Write header
     </span>md_content.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">"# {}\n\n"</span>, title));
-    md_content.push_str(<span class="string">"[Back to Examples Index](../index.md)\n\n"</span>);
+    md_content.push_str(<span class="string">"[Back to Examples Index](./index.md)\n\n"</span>);
 
     <span class="comment">// Write description if available
     </span><span class="kw">if </span>!description.is_empty() {
