@@ -7,6 +7,11 @@
 
 A powerful Rust library for programmatically generating 3D models through composable transformations and plugins.
 
+## Documentation
+
+On a github page:
+[https://bbsify-landed.github.io/bbsify-landed-model-generator/mg/index.html](https://bbsify-landed.github.io/bbsify-landed-model-generator/mg/index.html)
+
 ## Features
 
 - **Transformation Pipeline**: Apply sequences of geometric transformations to create complex 3D models
