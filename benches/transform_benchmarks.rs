@@ -1,8 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use model_generator::primitives::{Cube, Sphere};
-use model_generator::transforms::advanced::Mirror;
-use model_generator::transforms::basic::{Rotate, Scale, Translate};
-use model_generator::{Model, Transform};
+use mg::primitives::{Cube, Sphere};
+use mg::transforms::advanced::Mirror;
+use mg::transforms::basic::{Rotate, Scale, Translate};
+use mg::{Model, Transform};
 
 fn create_test_cube() -> Model {
     Cube::new().size(1.0).center(0.0, 0.0, 0.0).build()

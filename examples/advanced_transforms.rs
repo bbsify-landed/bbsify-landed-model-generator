@@ -1,11 +1,11 @@
 //! Example demonstrating advanced transforms: Matrix, Mirror, and Quaternion.
 
-use model_generator::primitives::Cube;
-use model_generator::transforms::advanced::{Matrix, Mirror, Quaternion};
+use mg::primitives::Cube;
+use mg::transforms::advanced::{Matrix, Mirror, Quaternion};
 use nalgebra::{Matrix4, UnitQuaternion, Vector3};
 use std::f32::consts::PI;
 
-fn main() -> model_generator::Result<()> {
+fn main() -> mg::Result<()> {
     println!("Creating models with advanced transformations...");
 
     // Create a basic cube

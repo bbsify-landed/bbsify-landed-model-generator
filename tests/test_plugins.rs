@@ -1,9 +1,7 @@
-use model_generator::plugin::{
-    CompositePlugin, Plugin, PluginRegistry, SmoothNormalsPlugin, TransformPlugin,
-};
-use model_generator::primitives::Cube;
-use model_generator::{Model, Result};
-use model_generator::{Rotate, Scale, Translate};
+use mg::plugin::{CompositePlugin, Plugin, PluginRegistry, SmoothNormalsPlugin, TransformPlugin};
+use mg::primitives::Cube;
+use mg::{Model, Result};
+use mg::{Rotate, Scale, Translate};
 
 // A test plugin that inverts all vertex z coordinates
 struct InvertZPlugin {
@@ -185,9 +183,7 @@ fn test_plugin_error_handling() {
         }
 
         fn process(&self, _model: &mut Model) -> Result<()> {
-            Err(model_generator::Error::PluginError(
-                "Intentional failure".to_string(),
-            ))
+            Err(mg::Error::PluginError("Intentional failure".to_string()))
         }
     }
 
@@ -200,7 +196,7 @@ fn test_plugin_error_handling() {
 
     // Verify error type
     match result {
-        Err(model_generator::Error::PluginError(msg)) => {
+        Err(mg::Error::PluginError(msg)) => {
             assert_eq!(msg, "Intentional failure");
         }
         _ => panic!("Expected PluginError, got different error or success"),

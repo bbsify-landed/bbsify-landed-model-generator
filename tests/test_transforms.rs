@@ -1,8 +1,8 @@
-use model_generator::transforms::advanced::{Matrix, Mirror, Quaternion};
-use model_generator::transforms::deform::{Bend, Taper, Twist};
-use model_generator::transforms::projection::{Cylindrical, Orthographic, Perspective};
-use model_generator::{Face, Model, Transform, Vertex};
-use model_generator::{Rotate, Scale, Translate};
+use mg::transforms::advanced::{Matrix, Mirror, Quaternion};
+use mg::transforms::deform::{Bend, Taper, Twist};
+use mg::transforms::projection::{Cylindrical, Orthographic, Perspective};
+use mg::{Face, Model, Transform, Vertex};
+use mg::{Rotate, Scale, Translate};
 use nalgebra::{Matrix4, Point3, Vector3};
 use std::f32::consts::PI;
 

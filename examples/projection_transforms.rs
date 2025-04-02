@@ -1,12 +1,12 @@
 //! Example demonstrating projection transforms: Perspective, Orthographic, and Cylindrical.
 
-use model_generator::primitives::{Cube, Sphere};
-use model_generator::transforms::basic::Translate;
-use model_generator::transforms::projection::{Cylindrical, Orthographic, Perspective};
-use model_generator::{Face, Model, Vertex};
+use mg::primitives::{Cube, Sphere};
+use mg::transforms::basic::Translate;
+use mg::transforms::projection::{Cylindrical, Orthographic, Perspective};
+use mg::{Face, Model, Vertex};
 use nalgebra::{Point3, Vector3};
 
-fn main() -> model_generator::Result<()> {
+fn main() -> mg::Result<()> {
     println!("Creating models with projection transformations...");
 
     // === Perspective Projections ===

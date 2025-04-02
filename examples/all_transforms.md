@@ -16,15 +16,15 @@ Ok(())
 ```rust
 //! Example demonstrating transforms from all categories working together.
 
-use model_generator::primitives::{Cube, Cylinder, Sphere};
-use model_generator::transforms::advanced::{Mirror, Quaternion};
-use model_generator::transforms::basic::{Rotate, Scale};
-use model_generator::transforms::deform::{Bend, Taper, Twist};
-use model_generator::transforms::projection::{Cylindrical, Perspective};
+use mg::primitives::{Cube, Cylinder, Sphere};
+use mg::transforms::advanced::{Mirror, Quaternion};
+use mg::transforms::basic::{Rotate, Scale};
+use mg::transforms::deform::{Bend, Taper, Twist};
+use mg::transforms::projection::{Cylindrical, Perspective};
 use nalgebra::{Point3, Vector3};
 use std::f32::consts::PI;
 
-fn main() -> model_generator::Result<()> {
+fn main() -> mg::Result<()> {
     println!("Creating complex models using transforms from all categories...");
 
     // Model 1: Twisted and Bent Tower
@@ -41,7 +41,7 @@ fn main() -> model_generator::Result<()> {
 }
 
 /// Creates a twisted and bent tower model using multiple transforms
-fn create_twisted_tower() -> model_generator::Result<()> {
+fn create_twisted_tower() -> mg::Result<()> {
     // Start with a cylinder
     let mut model = Cylinder::new().radius(0.5).height(5.0).segments(48).build();
 
@@ -84,7 +84,7 @@ fn create_twisted_tower() -> model_generator::Result<()> {
             for face in &cube.mesh.faces {
                 let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
                 model.mesh.add_face(
-                    model_generator::Face {
+                    mg::Face {
                         indices: new_indices,
                     },
                     None,
@@ -101,7 +101,7 @@ fn create_twisted_tower() -> model_generator::Result<()> {
 }
 
 /// Creates a mirrored sculpture using advanced transforms
-fn create_mirrored_sculpture() -> model_generator::Result<()> {
+fn create_mirrored_sculpture() -> mg::Result<()> {
     // Start with a cube
     let mut model = Cube::new().size(0.5).center(0.5, 0.0, 0.0).build();
 
@@ -122,7 +122,7 @@ fn create_mirrored_sculpture() -> model_generator::Result<()> {
     for face in &sphere.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -146,7 +146,7 @@ fn create_mirrored_sculpture() -> model_generator::Result<()> {
     for face in &cylinder.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -184,7 +184,7 @@ fn create_mirrored_sculpture() -> model_generator::Result<()> {
     for face in &mirror_z.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -200,7 +200,7 @@ fn create_mirrored_sculpture() -> model_generator::Result<()> {
     for face in &mirror_x.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -216,7 +216,7 @@ fn create_mirrored_sculpture() -> model_generator::Result<()> {
     for face in &mirror_y.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -232,7 +232,7 @@ fn create_mirrored_sculpture() -> model_generator::Result<()> {
     for face in &mirror_xyz.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -250,7 +250,7 @@ fn create_mirrored_sculpture() -> model_generator::Result<()> {
 }
 
 /// Creates a space station model using various transforms
-fn create_space_station() -> model_generator::Result<()> {
+fn create_space_station() -> mg::Result<()> {
     // Create the central hub (a sphere)
     let mut model = Sphere::new()
         .radius(1.0)
@@ -300,7 +300,7 @@ fn create_space_station() -> model_generator::Result<()> {
     for face in &docking_port.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -339,7 +339,7 @@ fn create_space_station() -> model_generator::Result<()> {
     for face in &ring1.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -355,7 +355,7 @@ fn create_space_station() -> model_generator::Result<()> {
     for face in &ring2.mesh.faces {
         let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
         model.mesh.add_face(
-            model_generator::Face {
+            mg::Face {
                 indices: new_indices,
             },
             None,
@@ -406,7 +406,7 @@ fn create_space_station() -> model_generator::Result<()> {
         for face in &strut_h.mesh.faces {
             let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
             model.mesh.add_face(
-                model_generator::Face {
+                mg::Face {
                     indices: new_indices,
                 },
                 None,
@@ -422,7 +422,7 @@ fn create_space_station() -> model_generator::Result<()> {
         for face in &strut_v.mesh.faces {
             let new_indices = face.indices.iter().map(|&idx| idx + offset).collect();
             model.mesh.add_face(
-                model_generator::Face {
+                mg::Face {
                     indices: new_indices,
                 },
                 None,

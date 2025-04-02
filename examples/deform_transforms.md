@@ -68,11 +68,11 @@ Ok(())
 ```rust
 //! Example demonstrating deform transforms: Twist, Bend, and Taper.
 
-use model_generator::primitives::{Cube, Cylinder};
-use model_generator::transforms::deform::{Bend, Taper, Twist};
+use mg::primitives::{Cube, Cylinder};
+use mg::transforms::deform::{Bend, Taper, Twist};
 use nalgebra::Vector3;
 
-fn main() -> model_generator::Result<()> {
+fn main() -> mg::Result<()> {
     println!("Creating models with deformation transformations...");
 
     // === Twist Transformations ===
