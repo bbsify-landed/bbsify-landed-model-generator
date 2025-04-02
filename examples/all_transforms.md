@@ -1,3 +1,19 @@
+# Example demonstrating transforms from all categories working together.
+
+[Back to Examples Index](../index.md)
+
+## Usage
+
+```rust
+create_twisted_tower()?;
+create_mirrored_sculpture()?;
+create_space_station()?;
+Ok(())
+```
+
+## Complete Source Code
+
+```rust
 //! Example demonstrating transforms from all categories working together.
 
 use model_generator::primitives::{Cube, Cylinder, Sphere};
@@ -7,13 +23,9 @@ use model_generator::transforms::deform::{Bend, Taper, Twist};
 use model_generator::transforms::projection::{Cylindrical, Perspective};
 use nalgebra::{Point3, Vector3};
 use std::f32::consts::PI;
-use std::fs;
 
 fn main() -> model_generator::Result<()> {
     println!("Creating complex models using transforms from all categories...");
-
-    // Create output directory if it doesn't exist
-    fs::create_dir_all("output").map_err(|e| model_generator::Error::IoError(e))?;
 
     // Model 1: Twisted and Bent Tower
     create_twisted_tower()?;
@@ -431,3 +443,8 @@ fn create_space_station() -> model_generator::Result<()> {
 
     Ok(())
 }
+```
+
+---
+
+Generated for model-generator library

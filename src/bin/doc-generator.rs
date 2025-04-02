@@ -1,3 +1,4 @@
+use std::env;
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -6,7 +7,17 @@ use std::path::{Path, PathBuf};
 ///
 /// This binary generates markdown files containing documentation
 /// for the examples in the project, suitable for GitHub Pages.
+///
+/// Usage:
+///   doc-generator [--promote]
+///
+/// Options:
+///   --promote  Place markdown files next to the actual example files in addition to the docs directory
 fn main() -> io::Result<()> {
+    // Parse command line arguments
+    let args: Vec<String> = env::args().collect();
+    let promote = args.iter().any(|arg| arg == "--promote");
+
     // Define the output directory
     let output_dir = PathBuf::from("target/markdown-docs");
     fs::create_dir_all(&output_dir)?;
@@ -20,7 +31,7 @@ fn main() -> io::Result<()> {
     // Process examples
     let examples_dir = PathBuf::from("examples");
     if examples_dir.exists() {
-        generate_examples_markdown(&output_dir, &examples_dir, &package_name)?;
+        generate_examples_markdown(&output_dir, &examples_dir, &package_name, promote)?;
     } else {
         println!("No examples directory found.");
     }
@@ -29,6 +40,11 @@ fn main() -> io::Result<()> {
         "Markdown documentation generated at: {}",
         output_dir.display()
     );
+
+    if promote {
+        println!("Markdown files also placed next to example files in the examples directory.");
+    }
+
     Ok(())
 }
 
@@ -36,6 +52,7 @@ fn generate_examples_markdown(
     output_dir: &Path,
     examples_dir: &Path,
     package_name: &str,
+    promote: bool,
 ) -> io::Result<()> {
     // Create index file for all examples
     let mut index_file = File::create(output_dir.join("index.md"))?;
@@ -85,22 +102,27 @@ fn generate_examples_markdown(
             let example_name = filename.replace(".rs", "");
             let content = fs::read_to_string(&path)?;
 
-            // Create markdown file for this example
-            let example_file =
+            // Generate markdown content
+            let md_content = generate_markdown_content(&path, &content, package_name)?;
+
+            // Create markdown file in the examples output directory
+            let mut example_file =
                 File::create(examples_output_dir.join(format!("{}.md", example_name)))?;
-            document_example_to_markdown(example_file, &path, &content, package_name)?;
+            example_file.write_all(md_content.as_bytes())?;
+
+            // If promote flag is set, also place the markdown file next to the example file
+            if promote {
+                let example_md_path = path.with_extension("md");
+                let mut promoted_file = File::create(example_md_path)?;
+                promoted_file.write_all(md_content.as_bytes())?;
+            }
         }
     }
 
     Ok(())
 }
 
-fn document_example_to_markdown(
-    mut file: File,
-    path: &Path,
-    content: &str,
-    package_name: &str,
-) -> io::Result<()> {
+fn generate_markdown_content(path: &Path, content: &str, package_name: &str) -> io::Result<String> {
     let filename = path.file_name().unwrap().to_string_lossy();
     let example_name = filename.replace(".rs", "");
 
@@ -108,33 +130,35 @@ fn document_example_to_markdown(
     let title = extract_example_title(content, &example_name);
     let description = extract_example_description(content);
 
+    let mut md_content = String::new();
+
     // Write header
-    writeln!(file, "# {}", title)?;
-    writeln!(file, "\n[Back to Examples Index](../index.md)\n")?;
+    md_content.push_str(&format!("# {}\n\n", title));
+    md_content.push_str("[Back to Examples Index](../index.md)\n\n");
 
     // Write description if available
     if !description.is_empty() {
-        writeln!(file, "{}\n", description)?;
+        md_content.push_str(&format!("{}\n\n", description));
     }
 
     // Extract and write usage information
     let usage_info = extract_example_usage(content);
     if !usage_info.is_empty() {
-        writeln!(file, "## Usage\n")?;
-        writeln!(file, "{}\n", usage_info)?;
+        md_content.push_str("## Usage\n\n");
+        md_content.push_str(&format!("{}\n\n", usage_info));
     }
 
     // Add full source code
-    writeln!(file, "## Complete Source Code\n")?;
-    writeln!(file, "```rust")?;
-    writeln!(file, "{}", content)?;
-    writeln!(file, "```")?;
+    md_content.push_str("## Complete Source Code\n\n");
+    md_content.push_str("```rust\n");
+    md_content.push_str(content);
+    md_content.push_str("```\n");
 
     // Add footer
-    writeln!(file, "\n---\n")?;
-    writeln!(file, "Generated for {} library", package_name)?;
+    md_content.push_str("\n---\n\n");
+    md_content.push_str(&format!("Generated for {} library", package_name));
 
-    Ok(())
+    Ok(md_content)
 }
 
 fn extract_example_title(content: &str, default_name: &str) -> String {
