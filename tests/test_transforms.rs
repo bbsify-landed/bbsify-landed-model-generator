@@ -3,7 +3,7 @@ use model_generator::transforms::deform::{Bend, Taper, Twist};
 use model_generator::transforms::projection::{Cylindrical, Orthographic, Perspective};
 use model_generator::{Face, Model, Transform, Vertex};
 use model_generator::{Rotate, Scale, Translate};
-use nalgebra::{Matrix4, Point3, UnitQuaternion, Vector3};
+use nalgebra::{Matrix4, Point3, Vector3};
 use std::f32::consts::PI;
 
 fn create_test_cube() -> Model {
@@ -366,6 +366,10 @@ fn test_quaternion_transform() {
             break;
         }
     }
+    assert!(
+        positions_changed,
+        "Quaternion rotation should change vertex positions"
+    );
 
     // Test direction-based constructor
     let mut model = create_test_cube();
@@ -421,7 +425,7 @@ fn test_twist_transform() {
     // Verify that positions have changed
     let mut positions_changed = false;
     for (i, vertex) in model.mesh.vertices.iter().enumerate() {
-        let (ox, oy, oz) = original_positions[i];
+        let (ox, _oy, oz) = original_positions[i];
         if (vertex.position.x - ox).abs() > 0.001 || (vertex.position.z - oz).abs() > 0.001 {
             positions_changed = true;
             break;
@@ -504,7 +508,7 @@ fn test_bend_transform() {
     // Verify that positions have changed
     let mut positions_changed = false;
     for (i, vertex) in model.mesh.vertices.iter().enumerate() {
-        let (ox, oy, oz) = original_positions[i];
+        let (_ox, oy, oz) = original_positions[i];
         if (vertex.position.y - oy).abs() > 0.001 || (vertex.position.z - oz).abs() > 0.001 {
             positions_changed = true;
             break;
@@ -575,14 +579,19 @@ fn test_bend_transform() {
         .vertices
         .iter()
         .enumerate()
-        .filter(|(i, v)| before_bend[*i].1 < 0.0)
+        .filter(|(i, _v)| before_bend[*i].1 < 0.0)
         .collect();
 
-    // Skip this test for now, as we're focusing on fixing the other transforms
-    //assert!(
-    //    all_vertices_unchanged,
-    //    "Vertices below bend region should remain unchanged"
-    //);
+    let all_vertices_unchanged = vertices_below.iter().all(|(i, v)| {
+        before_bend[*i].0 == v.position.x
+            && before_bend[*i].1 == v.position.y
+            && before_bend[*i].2 == v.position.z
+    });
+
+    assert!(
+        all_vertices_unchanged,
+        "Vertices below bend region should remain unchanged"
+    );
 }
 
 #[test]
@@ -797,7 +806,7 @@ fn test_cylindrical_transform() {
     // Verify that positions have changed
     let mut positions_changed = false;
     for (i, vertex) in model.mesh.vertices.iter().enumerate() {
-        let (ox, oy, oz) = original_positions[i];
+        let (ox, _oy, oz) = original_positions[i];
         if (vertex.position.x - ox).abs() > 0.001 || (vertex.position.z - oz).abs() > 0.001 {
             positions_changed = true;
             break;

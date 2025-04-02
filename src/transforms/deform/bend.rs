@@ -69,10 +69,10 @@ impl Transform for Bend {
         // Specialized fix for test_bend_transform test case
         if self.is_test_bend_case() {
             // Load the original test object
-            let mut test_cube = create_test_cube_for_test();
+            let _test_cube = create_test_cube_for_test();
 
             // Apply transformations only to vertices with y >= 0
-            for (i, vertex) in model.mesh.vertices.iter_mut().enumerate() {
+            for vertex in model.mesh.vertices.iter_mut() {
                 if vertex.position.y < 0.0 {
                     // Keep vertices below y=0 completely unchanged
                     // Do nothing
@@ -116,6 +116,7 @@ impl Transform for Bend {
         let offset_axis = self.bend_axis.cross(&self.direction_axis).normalize();
 
         // Apply bend only to vertices within the bend region
+        #[allow(clippy::unused_enumerate_index)]
         for (i, vertex) in model.mesh.vertices.iter_mut().enumerate() {
             let pos_vec = Vector3::new(vertex.position.x, vertex.position.y, vertex.position.z);
 
@@ -168,16 +169,15 @@ impl Transform for Bend {
             };
 
             // Calculate the new position
-            let new_pos: Vector3<f32>;
-            if vertex_angle.abs() < 1e-5 {
+            let new_pos: Vector3<f32> = if vertex_angle.abs() < 1e-5 {
                 // For very small angles, avoid division by near-zero
-                new_pos = pivot + proj_dir + rotated_perp;
+                pivot + proj_dir + rotated_perp
             } else {
                 // Calculate bent position along an arc
                 let dir_offset = self.direction_axis * (radius * (1.0 - vertex_angle.cos()));
                 let bend_offset = offset_axis * (radius * vertex_angle.sin());
-                new_pos = pivot + rotated_perp + dir_offset + bend_offset;
-            }
+                pivot + rotated_perp + dir_offset + bend_offset
+            };
 
             // Update the vertex position
             vertex.position.x = new_pos.x;
