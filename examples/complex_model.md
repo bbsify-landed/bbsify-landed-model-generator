@@ -30,9 +30,7 @@ Ok(())
 ```rust
 //! A complex example demonstrating the plugin system and combining multiple primitives.
 
-use mg::plugin::{
-    CompositePlugin, Plugin, PluginRegistry, SmoothNormalsPlugin, TransformPlugin,
-};
+use mg::plugin::{CompositePlugin, Plugin, PluginRegistry, SmoothNormalsPlugin, TransformPlugin};
 use mg::primitives::{Cylinder, Sphere};
 use mg::types::Material;
 use mg::{Model, Result, Rotate, Scale, Translate};

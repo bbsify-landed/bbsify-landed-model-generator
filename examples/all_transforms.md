@@ -5,6 +5,7 @@
 ## Usage
 
 ```rust
+fs::create_dir_all("output").map_err(|e| mg::Error::IoError(e))?;
 create_twisted_tower()?;
 create_mirrored_sculpture()?;
 create_space_station()?;
@@ -23,9 +24,13 @@ use mg::transforms::deform::{Bend, Taper, Twist};
 use mg::transforms::projection::{Cylindrical, Perspective};
 use nalgebra::{Point3, Vector3};
 use std::f32::consts::PI;
+use std::fs;
 
 fn main() -> mg::Result<()> {
     println!("Creating complex models using transforms from all categories...");
+
+    // Create output directory if it doesn't exist
+    fs::create_dir_all("output").map_err(|e| mg::Error::IoError(e))?;
 
     // Model 1: Twisted and Bent Tower
     create_twisted_tower()?;
