@@ -1,11 +1,9 @@
 //! A complex example demonstrating the plugin system and combining multiple primitives.
 
-use model_generator::plugin::{
-    CompositePlugin, Plugin, PluginRegistry, SmoothNormalsPlugin, TransformPlugin,
-};
-use model_generator::primitives::{Cylinder, Sphere};
-use model_generator::types::Material;
-use model_generator::{Model, Result, Rotate, Scale, Translate};
+use mg::plugin::{CompositePlugin, Plugin, PluginRegistry, SmoothNormalsPlugin, TransformPlugin};
+use mg::primitives::{Cylinder, Sphere};
+use mg::types::Material;
+use mg::{Model, Result, Rotate, Scale, Translate};
 
 // Custom plugin that combines primitives to create a snowman
 struct SnowmanPlugin {
@@ -111,7 +109,7 @@ fn merge_model(target: &mut Model, source: &Model) -> Result<()> {
 
         target
             .mesh
-            .add_face(model_generator::types::Face::new(new_indices), material);
+            .add_face(mg::types::Face::new(new_indices), material);
     }
 
     Ok(())

@@ -1,6 +1,6 @@
-use model_generator::primitives::Cube;
-use model_generator::{Face, Model, Vertex};
-use model_generator::{Rotate, Scale, Translate};
+use mg::primitives::Cube;
+use mg::{Face, Model, Vertex};
+use mg::{Rotate, Scale, Translate};
 use nalgebra::{Point3, Vector3};
 use std::fs;
 use std::path::Path;

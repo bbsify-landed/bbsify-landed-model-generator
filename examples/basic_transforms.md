@@ -39,11 +39,11 @@ Ok(())
 ```rust
 //! Example demonstrating basic transforms: Scale, Translate, and Rotate.
 
-use model_generator::primitives::Cube;
-use model_generator::transforms::basic::{Rotate, Scale, Translate};
+use mg::primitives::Cube;
+use mg::transforms::basic::{Rotate, Scale, Translate};
 use nalgebra::Vector3;
 
-fn main() -> model_generator::Result<()> {
+fn main() -> mg::Result<()> {
     println!("Creating models with basic transformations...");
 
     // Create a basic cube

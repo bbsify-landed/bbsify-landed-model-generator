@@ -27,9 +27,9 @@ model-generator = "0.1.0"
 ## Usage
 
 ```rust
-use model_generator::{Model, Transform};
-use model_generator::primitives::Cube;
-use model_generator::transforms::{Scale, Rotate};
+use mg::{Model, Transform};
+use mg::primitives::Cube;
+use mg::transforms::{Scale, Rotate};
 
 fn main() {
     // Create a base primitive
@@ -77,7 +77,7 @@ This is useful for offline reference or for getting a complete overview of the e
 Create custom transformations by implementing the `Transform` trait:
 
 ```rust
-use model_generator::{Model, Transform, Result};
+use mg::{Model, Transform, Result};
 
 struct CustomTransform {
     // Your transform parameters

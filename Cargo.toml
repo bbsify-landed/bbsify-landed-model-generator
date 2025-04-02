@@ -28,7 +28,7 @@ stl_io = "0.7.0"                                   # STL format
 criterion = "0.5.1" # Benchmarking
 
 [lib]
-name = "model_generator" # The name of the library
+name = "mg" # The name of the library
 path = "src/lib.rs" # The entry point for the library
 crate-type = [
     "lib",

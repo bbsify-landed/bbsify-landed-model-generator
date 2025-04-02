@@ -32,7 +32,7 @@ jobs:
         run: cargo doc --no-deps --all-features
       - name: Add index.html
         run: |
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=model_generator\">" > target/doc/index.html
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=mg\">" > target/doc/index.html
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:

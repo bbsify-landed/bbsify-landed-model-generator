@@ -1,4 +1,4 @@
-use model_generator::{Face, Mesh, Model, Vertex};
+use mg::{Face, Mesh, Model, Vertex};
 use nalgebra::{Point3, Vector3};
 
 #[test]

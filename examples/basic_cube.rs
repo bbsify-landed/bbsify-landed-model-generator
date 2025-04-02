@@ -1,9 +1,9 @@
 //! A basic example showing how to create a cube and export it in multiple formats.
 
-use model_generator::primitives::Cube;
-use model_generator::{Rotate, Scale, Translate};
+use mg::primitives::Cube;
+use mg::{Rotate, Scale, Translate};
 
-fn main() -> model_generator::Result<()> {
+fn main() -> mg::Result<()> {
     println!("Creating a basic cube model...");
 
     // Create a cube primitive

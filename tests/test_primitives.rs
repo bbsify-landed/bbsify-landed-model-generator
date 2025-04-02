@@ -1,4 +1,4 @@
-use model_generator::primitives::{Cube, Cylinder, Sphere};
+use mg::primitives::{Cube, Cylinder, Sphere};
 
 #[test]
 fn test_cube_creation() {
